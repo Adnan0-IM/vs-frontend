@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "vite-app",
+      "name": "VS Project",
       "dependencies": {
         "@fontsource-variable/merriweather": "^5.2.6",
         "@hugeicons/core-free-icons": "^4.2.0",
