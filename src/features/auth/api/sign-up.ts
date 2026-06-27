@@ -13,7 +13,7 @@ export async function signUp(input: SignUpInput) {
     password: input.password,
     name: input.name,
     image: input.image,
-    callbackURL: "/dashboard",
+    
   })
 
   if (error) {

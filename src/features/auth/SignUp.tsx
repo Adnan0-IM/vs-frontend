@@ -1,6 +1,6 @@
 import { HugeiconsIcon } from "@hugeicons/react"
 import { DocumentValidationIcon } from "@hugeicons/core-free-icons"
-import { SignUpForm } from "@/components/signup-form"
+import { SignUpForm } from "@/components/auth/signup-form"
 import { Link } from "react-router"
 export default function SignUp() {
   return (

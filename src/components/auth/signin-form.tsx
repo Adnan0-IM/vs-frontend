@@ -47,7 +47,9 @@ export function SignInForm({
         password: data.password,
       })
 
-      navigate("/")
+      console.log("Navigation starts")
+      navigate("/administration")
+      console.log("Navigation ends")
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Sign in failed."

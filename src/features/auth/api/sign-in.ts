@@ -10,7 +10,6 @@ export async function signIn(input: SignInInput) {
   const { error } = await authClient.signIn.email({
     email: input.email,
     password: input.password,
-    callbackURL: "/",
     rememberMe: input.rememberMe ?? false,
   })
 
