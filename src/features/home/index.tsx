@@ -11,7 +11,9 @@ const Home = () => {
       <header>
         <div className="flex items-center justify-between text-muted-foreground">
           <div className="flex items-center gap-2 font-bold">
-            <HugeiconsIcon icon={DocumentValidationIcon} />{" "}
+            <div className="flex aspect-square size-6 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <HugeiconsIcon size={16} icon={DocumentValidationIcon} />{" "}
+            </div>
             <span>SDVS</span>{" "}
           </div>{" "}
           <nav className="flex items-center gap-4">
