@@ -1,10 +1,10 @@
 import { createAuthClient } from "better-auth/react"
-import { adminClient } from "better-auth/client/plugins"
+import { organizationClient } from "better-auth/client/plugins"
 
 export const authClient = createAuthClient({
   baseURL: import.meta.env.VITE_AUTH_ORIGIN ?? window.location.origin,
   basePath: "/api/auth",
-  plugins: [adminClient()],
+  plugins: [organizationClient()],
 })
 
 export type Session = typeof authClient.$Infer.Session
