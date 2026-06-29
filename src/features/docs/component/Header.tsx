@@ -8,7 +8,6 @@ import {
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Link } from "react-router"
-import { Button } from "@/components/ui/button"
 
 const Header = ({
   mobileSidebarOpen,
@@ -21,18 +20,18 @@ const Header = ({
     <header className="sticky border-b border-border top-0 left-0 z-40 w-full bg-background p-4">
       <div className="flex items-center justify-between font-bold text-muted-foreground">
         <div className=" items-center flex ">
-          <Button
+          <button
           className="mr-2 md:hidden"
-            variant="ghost"
-            size="icon"
+            // variant="ghost"
+            // size="icon"
             onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
           >
             {mobileSidebarOpen ? (
-              <HugeiconsIcon className="h-5 w-5" icon={X} />
+              <HugeiconsIcon className="h-5.5 w-5.5" icon={X} />
             ) : (
-              <HugeiconsIcon className="h-5 w-5" icon={Menu} />
+              <HugeiconsIcon className="h-5.5 w-5.5" icon={Menu} />
             )}
-          </Button>
+          </button>
           <Link to="/" className="flex items-center gap-2">
             <div className="flex aspect-square size-6 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
               <HugeiconsIcon size={16} icon={DocumentValidationIcon} />{" "}

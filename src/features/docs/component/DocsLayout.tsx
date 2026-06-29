@@ -120,7 +120,7 @@ export function DocsLayout({
     sections.forEach((section) => {
       if (section.pages.some((p) => p.slug === currentSlug)) {
         setOpenSections((prev) => new Set(prev).add(section.title))
-        window.scroll(0,0)
+        window.scroll(0, 0)
       }
     })
   }, [currentSlug, sections])
@@ -137,7 +137,7 @@ export function DocsLayout({
           {/* Left Sidebar */}
           <aside
             className={cn(
-              "fixed inset-y-0 z-30 top-[4.34rem] left-0 w-72 transform border-r bg-background transition-transform duration-200 ease-in-out lg:sticky lg:top-20 lg:block lg:h-[calc(100vh-5rem)] lg:translate-x-0 lg:self-start",
+              "fixed inset-y-0 top-[4.3432rem] left-0 z-30 w-72 transform border-r bg-background transition-transform duration-200 ease-in-out lg:sticky lg:top-20 lg:block lg:h-[calc(100vh-5rem)] lg:translate-x-0 lg:self-start",
               mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
             )}
           >
@@ -178,6 +178,7 @@ export function DocsLayout({
                                   ? "bg-accent font-medium text-accent-foreground"
                                   : "text-muted-foreground hover:text-foreground"
                               )}
+                              onClick={() => setMobileSidebarOpen(false)}
                             >
                               <Link to={page.href}>{page.title}</Link>
                             </Button>

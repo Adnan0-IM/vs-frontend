@@ -31,7 +31,7 @@ export function DocsPager({ sections, currentSlug }: DocsPagerProps) {
             <Button
               variant="ghost"
               asChild
-              className="group h-auto py-3 px-4 -mx-4 hover:bg-accent"
+              className="group h-auto py-3 px-4 border border-border -mx-4 hover:bg-accent"
             >
               <Link to={prevPage.href} className="flex items-center gap-3 no-underline">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border bg-background group-hover:border-primary/50 transition-colors">
@@ -56,7 +56,7 @@ export function DocsPager({ sections, currentSlug }: DocsPagerProps) {
             <Button
               variant="ghost"
               asChild
-              className="group h-auto py-3 px-4 -mx-4 hover:bg-accent sm:ml-auto"
+              className="group h-auto border border-border py-3 px-4 -mx-4 hover:bg-accent sm:ml-auto"
             >
               <Link to={nextPage.href} className="flex items-center gap-3 no-underline">
                 <div className="flex flex-col items-end text-right">
