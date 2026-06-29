@@ -132,7 +132,7 @@ export function DocsLayout({
         setMobileSidebarOpen={setMobileSidebarOpen}
       />
 
-      <div className="container mx-auto max-w-[1400px]">
+      <div className="container mx-auto max-w-350">
         <div className="flex">
           {/* Left Sidebar */}
           <aside
