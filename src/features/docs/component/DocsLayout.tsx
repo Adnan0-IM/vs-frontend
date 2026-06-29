@@ -121,6 +121,7 @@ export function DocsLayout({
     sections.forEach((section) => {
       if (section.pages.some((p) => p.slug === currentSlug)) {
         setOpenSections((prev) => new Set(prev).add(section.title))
+        window.scroll(0,0)
       }
     })
   }, [currentSlug, sections])
