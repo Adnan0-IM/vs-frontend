@@ -1,6 +1,7 @@
 import { authClient } from "@/lib/auth-client"
-import SignOutButton from "../auth/SignOutButton"
 import { useEffect, useState } from "react"
+import SignOutButton from "../auth/components/SignOutButton"
+import { UploadButton, UploadDropzone } from "@/uploadthing"
 
 export type Session = typeof authClient.$Infer.Session
 const Administration = () => {
@@ -25,11 +26,37 @@ const Administration = () => {
       <p>Welcome to the administration panel.</p>
       <section className="mt-4">
         <h2>Admin Info</h2>
-       <p>Name: {user?.name}</p>
-       <p>Email: {user?.email}</p>
-       <p>ID: {user?.id}</p>
-       <p>EmailVerified: {user?.emailVerified}</p>
-       <p>Role: {user?.role}</p>
+        <p>Name: {user?.name}</p>
+        <p>Email: {user?.email}</p>
+        <p>ID: {user?.id}</p>
+        <p>EmailVerified: {user?.emailVerified}</p>
+        <div>
+          <UploadButton
+            endpoint="imageUploader"
+            onClientUploadComplete={(file) => {
+              console.log("uploaded", file)
+              alert("Upload complete")
+            }}
+            onUploadAborted={() => {
+              alert("Upload aborted")
+            }}
+            onUploadError={(error) => {
+              console.error(error, error.cause)
+              alert("Upload failed")
+            }}
+          />
+          <UploadDropzone
+            endpoint={(routeRegistry) => routeRegistry.pdfUploader}
+            onClientUploadComplete={(file) => {
+              console.log("uploaded", file)
+              alert("Upload complete")
+            }}
+            onUploadError={(error) => {
+              console.error(error, error.cause)
+              alert("Upload failed")
+            }}
+          />
+        </div>
       </section>
       <SignOutButton />
     </div>
