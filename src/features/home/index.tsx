@@ -28,21 +28,21 @@ const Home = () => {
       </header>
       <div className="flex flex-col items-center justify-center gap-6 py-24 text-center md:flex-row md:text-left lg:gap-12 lg:py-32">
         <div>
-          <h1 className="text-4xl font-medium">
+          <h1 className=" text-2xl md:text-4xl font-medium">
             Secure Document Verification System <br />
-            <span className="mt-4 block text-2xl text-muted-foreground">
+            <span className="mt-4 block text-lg md:text-2xl text-muted-foreground">
               for issuing and verifying document authenticity, integrity, and
               non-repudiation
             </span>
           </h1>
-          <div className="mt-6 flex flex-row items-center justify-center gap-2 text-lg text-muted-foreground md:justify-normal">
-            <Link to={"/auth/sign-in"}>
+          <div className="md:mt-6 mt-10 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-lg text-muted-foreground md:justify-normal">
+            <Link className="w-full md:w-auto" to={"/auth/sign-in"}>
               {" "}
-              <Button>Sign in</Button>{" "}
+              <Button className="w-1/2 md:w-fit">Sign in</Button>{" "}
             </Link>
-            or
-            <Link className="" to={"/auth/sign-up"}>
-              <Button variant={"ghost"} className="">
+            <span className="mx-2 text-xs md:inline-block">or</span>{""}
+            <Link className="w-full md:w-auto" to={"/auth/sign-up"}>
+              <Button variant={"ghost"} className="border w-4/6 md:w-fit border-border">
                 Create an account.
               </Button>
             </Link>
@@ -51,7 +51,7 @@ const Home = () => {
         <div>
           <img
             src={heroImage}
-            className="h-1/2 rounded-md"
+            className="rounded-md"
             alt="Authentic document image"
           />
         </div>
