@@ -13,7 +13,6 @@ import type { DocSection, Heading } from "../types"
 import { DocsPager } from "./docsPager"
 import { Link } from "react-router"
 import Header from "./Header"
-import Footer from "./Footer"
 
 interface DocsLayoutProps {
   children: React.ReactNode
@@ -252,7 +251,6 @@ export function DocsLayout({
             onClick={() => setMobileSidebarOpen(false)}
           />
         )}
-        <Footer />
       </div>
     </div>
   )

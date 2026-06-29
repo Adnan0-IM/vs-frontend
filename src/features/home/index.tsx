@@ -4,10 +4,11 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { DocumentValidationIcon, Github } from "@hugeicons/core-free-icons"
 import heroImage from "@/assets/authentic image.jpg"
 import GetStartedButton from "./components/GetStartedButton"
+import Footer from "@/components/Footer"
 
 const Home = () => {
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-4 md:px-8 md:py-8 lg:px-4">
+    <div className="container mx-auto min-h-screen max-w-5xl px-4 py-4 md:px-8 md:py-8 lg:px-4">
       <header>
         <div className="flex items-center justify-between text-muted-foreground">
           <div className="flex items-center gap-2 font-bold">
@@ -56,10 +57,7 @@ const Home = () => {
           />
         </div>
       </div>
-      <footer className="py-6 text-center text-sm text-muted-foreground">
-        &copy; {new Date().getFullYear()} Secure Document Verification System.
-        All rights reserved.
-      </footer>
+   <Footer/> 
     </div>
   )
 }

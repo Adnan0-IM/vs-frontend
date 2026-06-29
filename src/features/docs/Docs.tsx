@@ -4,6 +4,7 @@ import type { DocSection } from "./types"
 import { useLocation } from "react-router"
 import Markdown from "react-markdown"
 import { content } from "./contents.ts"
+import Footer from "@/components/Footer.tsx"
 
 const sections: DocSection[] = [
   {
@@ -95,11 +96,13 @@ function Docs() {
   const location = useLocation()
   const currentSlug = location.pathname.split("/").pop() || "introduction"
 
-  const markdown = content.find((doc) => doc.slug.trim() === currentSlug)?.content || "# Not Found\n\nThe requested document was not found."
-   
-    console.log(currentSlug)
-console.log(content)
-    console.log(markdown)
+  const markdown =
+    content.find((doc) => doc.slug.trim() === currentSlug)?.content ||
+    "# Not Found\n\nThe requested document was not found."
+
+  console.log(currentSlug)
+  console.log(content)
+  console.log(markdown)
   return (
     <>
       <DocsLayout sections={sections} currentSlug={currentSlug}>
@@ -107,6 +110,7 @@ console.log(content)
           <Markdown>{markdown}</Markdown>
         </DocsContent>
       </DocsLayout>
+      <Footer />
     </>
   )
 }
