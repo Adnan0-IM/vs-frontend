@@ -3,16 +3,19 @@ import { Link } from "react-router"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { DocumentValidationIcon, Github } from "@hugeicons/core-free-icons"
 import heroImage from "@/assets/authentic image.jpg"
-import GetStartedButton from "@/components/get-started-button"
+import GetStartedButton from "./components/GetStartedButton"
 
 const Home = () => {
   return (
     <div className="container mx-auto max-w-5xl px-4 py-4 md:px-8 md:py-8 lg:px-4">
       <header>
         <div className="flex items-center justify-between text-muted-foreground">
-          <div className="font-bold flex items-center gap-2"><HugeiconsIcon icon={DocumentValidationIcon} /> <span>SDVS</span> </div>{" "}
+          <div className="flex items-center gap-2 font-bold">
+            <HugeiconsIcon icon={DocumentValidationIcon} />{" "}
+            <span>SDVS</span>{" "}
+          </div>{" "}
           <nav className="flex items-center gap-4">
-            <Link to={""}> Docs</Link>
+            <Link to={"/docs"}> Docs</Link>
             <Link to={""}></Link>
             <Link to={""}>
               <HugeiconsIcon icon={Github} size={22} />
