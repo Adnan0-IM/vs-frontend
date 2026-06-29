@@ -5,7 +5,7 @@ import {
   type GenerateTypedHelpersOptions,
 } from "@uploadthing/react";
 
-import type { OurFileRouter } from "../../vs-backend/src/uploadthing";
+import type { OurFileRouter } from "../uploadthing";
 import { BACKEND_URL } from "./constants";
 
 const initOpts = {
