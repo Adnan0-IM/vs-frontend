@@ -48,7 +48,7 @@ export function SignInForm({
       })
 
       console.log("Navigation starts")
-      navigate("/administration")
+      navigate("/dashboard")
       console.log("Navigation ends")
     } catch (error) {
       setErrorMessage(
