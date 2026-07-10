@@ -1,7 +1,7 @@
 import { Link } from "react-router"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
-import { authClient } from "@/lib/auth-client" // import the auth client
+import { authClient } from "@/lib/auth-client"
 
 const GetStartedButton = () => {
   const [token, setToken] = useState<string | null>(null)
@@ -27,7 +27,7 @@ const GetStartedButton = () => {
           <Button>Get Started</Button>
         </Link>
       ) : (
-        <Link to={"/administration"}>
+        <Link to={"/dashboard"}>
           <Button>Dashboard</Button>
         </Link>
       )}
