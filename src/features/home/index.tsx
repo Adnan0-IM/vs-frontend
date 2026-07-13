@@ -18,7 +18,7 @@ const Home = () => {
             <span>SDVS</span>{" "}
           </div>{" "}
           <nav className="flex items-center gap-4">
-            <Link to={"/docs"}> Docs</Link>
+            <Link to={"/"}> Docs</Link>
             <Link to={""}></Link>
             <Link to={""}>
               <HugeiconsIcon icon={Github} size={22} />
