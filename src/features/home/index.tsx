@@ -29,20 +29,25 @@ const Home = () => {
       </header>
       <div className="flex flex-col items-center justify-center gap-6 py-24 text-center md:flex-row md:text-left lg:gap-12 lg:py-32">
         <div>
-          <h1 className=" text-2xl md:text-4xl font-medium">
-         Trusted Document Issuance & Verification <br />
-            <span className="mt-4 block text-lg md:text-2xl text-muted-foreground">
-             Built on cryptographic proofs for authenticity, integrity, and non-repudiation
+          <h1 className="text-2xl font-medium md:text-4xl">
+            VeriDoc <br />
+            <span className="mt-4 block text-lg text-muted-foreground md:text-2xl">
+              Built on cryptographic proofs for authenticity, integrity, and
+              non-repudiation
             </span>
           </h1>
-          <div className="md:mt-6 mt-10 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-lg text-muted-foreground md:justify-normal">
+          <div className="mt-10 flex flex-col items-center justify-center gap-1 text-lg text-muted-foreground md:mt-6 md:flex-row md:justify-normal md:gap-2">
             <Link className="w-full md:w-auto" to={"/auth/sign-in"}>
               {" "}
               <Button className="w-1/2 md:w-fit">Sign in</Button>{" "}
             </Link>
-            <span className="mx-2 text-xs md:inline-block">or</span>{""}
+            <span className="mx-2 text-xs md:inline-block">or</span>
+            {""}
             <Link className="w-full md:w-auto" to={"/auth/sign-up"}>
-              <Button variant={"ghost"} className="border w-4/6 md:w-fit border-border">
+              <Button
+                variant={"ghost"}
+                className="w-4/6 border border-border md:w-fit"
+              >
                 Create an account.
               </Button>
             </Link>
@@ -56,7 +61,7 @@ const Home = () => {
           />
         </div>
       </div>
-   <Footer/> 
+      <Footer />
     </div>
   )
 }
