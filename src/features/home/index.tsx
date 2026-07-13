@@ -30,10 +30,13 @@ const Home = () => {
       <div className="flex flex-col items-center justify-center gap-6 py-24 text-center md:flex-row md:text-left lg:gap-12 lg:py-32">
         <div>
           <h1 className="text-2xl font-medium md:text-4xl">
-            VeriDoc <br />
-            <span className="mt-4 block text-lg text-muted-foreground md:text-2xl">
+            VeriDoc
+            <span className="mt-2 block text-lg text-muted-foreground md:mt-3 md:text-2xl">
               Built on cryptographic proofs for authenticity, integrity, and
-              non-repudiation
+              non-repudiation.
+            </span>
+            <span className="mt-1 block text-xs  md:text-sm text-muted-foreground ">
+              Issue and verify tamper-proof documents instantly.
             </span>
           </h1>
           <div className="mt-10 flex flex-col items-center justify-center gap-1 text-lg text-muted-foreground md:mt-6 md:flex-row md:justify-normal md:gap-2">
