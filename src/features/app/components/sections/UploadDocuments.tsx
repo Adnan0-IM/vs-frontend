@@ -1,4 +1,4 @@
-import Layout from "../components/Layout"
+import Layout from "../Layout"
 
 const UploadDocuments = () => {
   return (
