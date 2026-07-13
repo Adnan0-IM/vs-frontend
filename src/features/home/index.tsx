@@ -15,7 +15,7 @@ const Home = () => {
             <div className="flex aspect-square size-6 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
               <HugeiconsIcon size={16} icon={DocumentValidationIcon} />{" "}
             </div>
-            <span>SDVS</span>{" "}
+            <span>VeriDoc</span>{" "}
           </div>{" "}
           <nav className="flex items-center gap-4">
             <Link to={"/"}> Docs</Link>
