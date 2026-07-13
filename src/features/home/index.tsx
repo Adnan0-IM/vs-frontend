@@ -30,10 +30,9 @@ const Home = () => {
       <div className="flex flex-col items-center justify-center gap-6 py-24 text-center md:flex-row md:text-left lg:gap-12 lg:py-32">
         <div>
           <h1 className=" text-2xl md:text-4xl font-medium">
-            Secure Document Verification System <br />
+         Trusted Document Issuance & Verification <br />
             <span className="mt-4 block text-lg md:text-2xl text-muted-foreground">
-              for issuing and verifying document authenticity, integrity, and
-              non-repudiation
+             Built on cryptographic proofs for authenticity, integrity, and non-repudiation
             </span>
           </h1>
           <div className="md:mt-6 mt-10 flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-lg text-muted-foreground md:justify-normal">
