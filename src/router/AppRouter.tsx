@@ -18,7 +18,6 @@ import VerificationLogs from "@/features/app/sections/VerificationLogs"
 import Members from "@/features/app/sections/Members"
 import Settings from "@/features/app/sections/Settings"
 import Dashboard from "@/features/app/Dashboard"
-import OrganizationSettings from "@/features/app/sections/OrganizationSettings"
 import AccountSettings from "@/features/app/sections/AccountSettings"
 import OrgSetup from "@/features/app/OrgSetup"
 
@@ -179,10 +178,6 @@ const router = createBrowserRouter([
           {
             path: "settings",
             element: <Settings />,
-          },
-          {
-            path: "organization",
-            element: <OrganizationSettings />,
           },
           {
             path: "Account",

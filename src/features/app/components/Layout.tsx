@@ -23,8 +23,6 @@ const breadcrumbTitles: Record<string, string> = {
   "/dashboard/verification-logs": "Verification Logs",
   "/dashboard/members": "Members",
   "/dashboard/settings": "Settings",
-  "/dashboard/organization": "Organization",
-  "/dashboard/keys": "Keys",
 }
 
 const Layout = ({ children }: { children: React.ReactNode }) => {

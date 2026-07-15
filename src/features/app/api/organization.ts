@@ -81,6 +81,7 @@ export type DashboardStatsResponse = {
     id: string
     title: string
     originalFilename: string
+    fileUrl: string
     fileSize: number
     status: string
     createdAt: string

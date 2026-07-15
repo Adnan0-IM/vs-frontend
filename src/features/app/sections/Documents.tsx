@@ -15,6 +15,7 @@ import {
   AddCircleIcon,
   Loading03Icon,
   Files02Icon,
+  PrinterIcon,
 } from "@hugeicons/core-free-icons"
 import { toast } from "sonner"
 import { authClient } from "@/lib/auth-client"
@@ -28,6 +29,40 @@ const Documents = () => {
   // Modals state
   const [selectedQrDoc, setSelectedQrDoc] = useState<SignedDocument | null>(null)
   const [revokeConfirmDoc, setRevokeConfirmDoc] = useState<SignedDocument | null>(null)
+  
+  // Printing state
+  const [isPrinting, setIsPrinting] = useState<string | null>(null)
+
+  const handlePrintPdf = async (url: string, docId: string) => {
+    setIsPrinting(docId)
+    const toastId = toast.loading("Preparing document for print...")
+    try {
+      const response = await fetch(url)
+      const blob = await response.blob()
+      const blobUrl = URL.createObjectURL(blob)
+      
+      const iframe = document.createElement("iframe")
+      iframe.style.display = "none"
+      iframe.src = blobUrl
+      document.body.appendChild(iframe)
+      
+      iframe.onload = () => {
+        iframe.contentWindow?.focus()
+        iframe.contentWindow?.print()
+        toast.success("Print dialog opened.", { id: toastId })
+        setTimeout(() => {
+          document.body.removeChild(iframe)
+          URL.revokeObjectURL(blobUrl)
+          setIsPrinting(null)
+        }, 1000)
+      }
+    } catch (error) {
+      console.error("Direct printing failed, opening in new tab", error)
+      toast.info("Opening document in new tab for printing...", { id: toastId })
+      window.open(url, "_blank")
+      setIsPrinting(null)
+    }
+  }
 
   const { data: activeMember } = authClient.useActiveMember()
   
@@ -272,6 +307,20 @@ const Documents = () => {
                             <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
                               <HugeiconsIcon icon={Download02Icon} className="size-4" />
                             </a>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Print Signed File"
+                            disabled={isPrinting !== null}
+                            onClick={() => handlePrintPdf(doc.fileUrl, doc.id)}
+                            className="text-muted-foreground hover:text-primary size-8"
+                          >
+                            {isPrinting === doc.id ? (
+                              <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
+                            ) : (
+                              <HugeiconsIcon icon={PrinterIcon} className="size-4" />
+                            )}
                           </Button>
                           
                           {doc.status === "ACTIVE" && (

@@ -8,18 +8,15 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import {
-  Building01Icon,
   ClipboardCheckIcon,
   DashboardCircleSettingsIcon,
   FileUploadIcon,
   Files02Icon,
-  Key01Icon,
   Settings,
   UserGroupIcon,
 } from "@hugeicons/core-free-icons"
 import { authClient } from "@/lib/auth-client"
 import { NavMain } from "./nav-main"
-import { NavSecondary } from "./nav-secondary"
 import { NavUser } from "./nav-user"
 import { Link } from "react-router"
 
@@ -60,18 +57,6 @@ const data = {
       title: "Settings",
       url: "/dashboard/settings",
       icon: Settings,
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Organization",
-      url: "/dashboard/organization",
-      icon: Building01Icon,
-    },
-    {
-      title: "Keys",
-      url: "/dashboard/keys",
-      icon: Key01Icon,
     },
   ],
 }
@@ -130,7 +115,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={sidebarUser} />
