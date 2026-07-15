@@ -24,7 +24,7 @@ import OrgSetup from "@/features/app/OrgSetup"
 
 const NavigationLoading = () => {
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-4 md:px-8 md:py-8 lg:px-4">
+    <div className="container mx-auto max-w-5xl px-4 py-4 md:px-8 md:py-8 lg:px-4 flex items-center justify-center">
       <p>Loading...</p>
     </div>
   )
