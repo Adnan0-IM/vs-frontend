@@ -7,7 +7,14 @@ import {
   type VerificationResponse,
 } from "../app/api/documents"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   CheckmarkCircle02Icon,
@@ -17,8 +24,12 @@ import {
   Loading03Icon,
   InformationCircleIcon,
   ArrowRight01Icon,
+  DocumentValidationIcon,
+  Github,
 } from "@hugeicons/core-free-icons"
 import { toast } from "sonner"
+import GetStartedButton from "../home/components/GetStartedButton"
+import Footer from "@/components/Footer"
 
 const Verification = () => {
   const [searchParams] = useSearchParams()
@@ -27,7 +38,7 @@ const Verification = () => {
 
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<VerificationResponse | null>(null)
-  
+
   // File verification upload state
   const [dragActive, setDragActive] = useState(false)
   const [uploadingFile, setUploadingFile] = useState(false)
@@ -46,14 +57,22 @@ const Verification = () => {
       } else if (res.documentStatus === "REVOKED") {
         toast.warning("Warning: Document has been revoked.", { id: toastId })
       } else if (res.result === "TAMPERED") {
-        toast.error("Cryptographic signature mismatch! Content was altered.", { id: toastId })
+        toast.error("Cryptographic signature mismatch! Content was altered.", {
+          id: toastId,
+        })
       } else {
         toast.error("Document not found.", { id: toastId })
       }
     } catch (err: unknown) {
       console.error(err)
-      const error = err as { response?: { data?: { message?: string } }; message?: string };
-      toast.error(error.response?.data?.message || "Verification check failed.", { id: toastId })
+      const error = err as {
+        response?: { data?: { message?: string } }
+        message?: string
+      }
+      toast.error(
+        error.response?.data?.message || "Verification check failed.",
+        { id: toastId }
+      )
     } finally {
       setLoading(false)
     }
@@ -108,33 +127,46 @@ const Verification = () => {
   const handleFileVerification = async (verifyFile: File) => {
     setUploadingFile(true)
     setResult(null)
-    const toastId = toast.loading("Uploading temporary file for cryptographic analysis...")
+    const toastId = toast.loading(
+      "Uploading temporary file for cryptographic analysis..."
+    )
     try {
       // 1. Upload to UploadThing
       const uploadRes = await startUpload([verifyFile])
       const uploadedFile = uploadRes?.[0]
-      
+
       if (!uploadedFile) {
         throw new Error("Temporary file upload failed.")
       }
 
       // 2. Call backend to verify by file URL
-      toast.loading("Calculating document SHA-256 and validating signature...", { id: toastId })
+      toast.loading(
+        "Calculating document SHA-256 and validating signature...",
+        { id: toastId }
+      )
       const res = await verifyDocumentByFile(uploadedFile.url)
       setResult(res)
 
       if (res.verified && res.documentStatus === "ACTIVE") {
-        toast.success("Cryptographic match found! Authentic document.", { id: toastId })
+        toast.success("Cryptographic match found! Authentic document.", {
+          id: toastId,
+        })
       } else if (res.documentStatus === "REVOKED") {
-        toast.warning("Warning: Valid match, but document has been revoked.", { id: toastId })
+        toast.warning("Warning: Valid match, but document has been revoked.", {
+          id: toastId,
+        })
       } else if (res.result === "TAMPERED") {
-        toast.error("Cryptographic signature mismatch! Content was altered.", { id: toastId })
+        toast.error("Cryptographic signature mismatch! Content was altered.", {
+          id: toastId,
+        })
       } else {
-        toast.error("No record of this document found in the ledger.", { id: toastId })
+        toast.error("No record of this document found in the ledger.", {
+          id: toastId,
+        })
       }
     } catch (err: unknown) {
       console.error(err)
-      const error = err as { message?: string };
+      const error = err as { message?: string }
       toast.error(error.message || "File verification failed.", { id: toastId })
     } finally {
       setUploadingFile(false)
@@ -158,50 +190,57 @@ const Verification = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="container mx-auto min-h-screen max-w-5xl px-4 py-4 md:px-8 md:py-8 lg:px-4">
       {/* Navbar */}
-      <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40">
-        <div className="mx-auto max-w-5xl px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg text-primary">
-            <span className="bg-primary/20 text-primary border border-primary/30 size-8 rounded-lg flex items-center justify-center font-black">
-              V
-            </span>
-            <span className="hidden sm:inline tracking-tight text-slate-200">VeriSign Portal</span>
-          </Link>
-          
-          <Button asChild variant="outline" size="sm" className="border-slate-700 hover:bg-slate-800 text-slate-300 font-medium">
-            <Link to="/auth/sign-in">
-              Issuer Dashboard
+
+      <header>
+        <div className="flex items-center justify-between text-muted-foreground">
+          <div className="flex items-center gap-2 font-bold">
+            <div className="flex aspect-square size-6 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <HugeiconsIcon size={16} icon={DocumentValidationIcon} />{" "}
+            </div>
+            <span>VeriDoc</span>{" "}
+          </div>{" "}
+          <nav className="flex items-center gap-4">
+            <Link to={"/"}> Docs</Link>
+            <Link to={""}></Link>
+            <Link to={""}>
+              <HugeiconsIcon icon={Github} size={22} />
             </Link>
-          </Button>
+            <GetStartedButton />
+          </nav>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center py-12 px-4">
-        <div className="w-full max-w-xl flex flex-col gap-6">
-          
+      <main className="flex flex-1 flex-col items-center justify-center px-4 py-12">
+        <div className="flex w-full max-w-xl flex-col gap-6">
           {/* Default/Initial portal info */}
           {!loading && !uploadingFile && !result && (
-            <div className="text-center space-y-3 mb-4">
-              <h1 className="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-slate-200 to-slate-400 sm:text-4xl">
+            <div className="mb-4 space-y-3 text-center">
+              <h1 className="text-3xl text-foreground sm:text-4xl">
                 Credential Verification
               </h1>
-              <p className="text-slate-400 text-sm max-w-md mx-auto">
-                Authenticate cryptographic credentials, academic transcripts, or letters using zero-trust RSA digital signatures.
+              <p className="mx-auto max-w-md text-sm">
+                Authenticate cryptographic credentials, academic transcripts, or
+                letters using zero-trust RSA digital signatures.
               </p>
             </div>
           )}
 
           {/* Loader */}
           {(loading || uploadingFile) && (
-            <Card className="border-slate-800 bg-slate-900 shadow-xl p-8 flex flex-col items-center text-center gap-4">
-              <HugeiconsIcon icon={Loading03Icon} className="size-12 text-primary animate-spin" strokeWidth={2} />
+            <Card className="flex flex-col items-center gap-4 border-border p-8 text-center shadow-xl">
+              <HugeiconsIcon
+                icon={Loading03Icon}
+                className="size-12 animate-spin text-primary"
+                strokeWidth={2}
+              />
               <div className="space-y-1">
-                <h3 className="font-semibold text-slate-200">
+                <h3 className="font-semibold">
                   {loading ? "Decrypting Signatures" : "Uploading File"}
                 </h3>
-                <p className="text-xs text-slate-400 max-w-xs">
+                <p className="max-w-xs text-xs">
                   {loading
                     ? "Fetching document hash, checking public keys, and verifying digital signatures..."
                     : "Sending PDF credential to analysis endpoint..."}
@@ -212,94 +251,140 @@ const Verification = () => {
 
           {/* Results Render */}
           {!loading && !uploadingFile && result && (
-            <Card className="border-slate-800 bg-slate-900 shadow-xl overflow-hidden animate-in fade-in duration-300">
-              
+            <Card className="animate-in overflow-hidden border-border shadow-xl duration-300 fade-in">
               {/* Header result banner */}
               {result.verified && result.documentStatus === "ACTIVE" && (
-                <div className="bg-emerald-500/10 border-b border-emerald-500/20 px-6 py-5 flex items-center gap-3">
-                  <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-10 text-emerald-400 shrink-0" strokeWidth={2} />
+                <div className="flex items-center gap-3 border-b border-emerald-500/20 bg-emerald-500/10 px-6 py-5">
+                  <HugeiconsIcon
+                    icon={CheckmarkCircle02Icon}
+                    className="size-10 shrink-0 text-emerald-400"
+                    strokeWidth={2}
+                  />
                   <div>
-                    <h2 className="text-lg font-bold text-emerald-400">AUTHENTIC CREDENTIAL</h2>
-                    <p className="text-xs text-emerald-400/80">Digital signature matches. The content is genuine and unmodified.</p>
+                    <h2 className="text-lg font-bold text-emerald-400">
+                      AUTHENTIC CREDENTIAL
+                    </h2>
+                    <p className="text-xs text-emerald-400/80">
+                      Digital signature matches. The content is genuine and
+                      unmodified.
+                    </p>
                   </div>
                 </div>
               )}
 
               {result.verified && result.documentStatus === "REVOKED" && (
-                <div className="bg-rose-500/10 border-b border-rose-500/20 px-6 py-5 flex items-center gap-3">
-                  <HugeiconsIcon icon={Alert02Icon} className="size-10 text-rose-400 shrink-0" strokeWidth={2} />
+                <div className="flex items-center gap-3 border-b border-rose-500/20 bg-rose-500/10 px-6 py-5">
+                  <HugeiconsIcon
+                    icon={Alert02Icon}
+                    className="size-10 shrink-0 text-rose-400"
+                    strokeWidth={2}
+                  />
                   <div>
-                    <h2 className="text-lg font-bold text-rose-400">REVOKED CREDENTIAL</h2>
-                    <p className="text-xs text-rose-400/80">This credential was valid but has since been revoked by the issuer.</p>
+                    <h2 className="text-lg font-bold text-rose-400">
+                      REVOKED CREDENTIAL
+                    </h2>
+                    <p className="text-xs text-rose-400/80">
+                      This credential was valid but has since been revoked by
+                      the issuer.
+                    </p>
                   </div>
                 </div>
               )}
 
               {result.result === "TAMPERED" && (
-                <div className="bg-red-500/10 border-b border-red-500/20 px-6 py-5 flex items-center gap-3">
-                  <HugeiconsIcon icon={MultiplicationSignCircleIcon} className="size-10 text-red-400 shrink-0" strokeWidth={2} />
+                <div className="flex items-center gap-3 border-b border-red-500/20 bg-red-500/10 px-6 py-5">
+                  <HugeiconsIcon
+                    icon={MultiplicationSignCircleIcon}
+                    className="size-10 shrink-0 text-red-400"
+                    strokeWidth={2}
+                  />
                   <div>
-                    <h2 className="text-lg font-bold text-red-400">TAMPERED / INVALID</h2>
-                    <p className="text-xs text-red-400/80">Signature mismatch. The document content was modified after signing.</p>
+                    <h2 className="text-lg font-bold text-red-400">
+                      TAMPERED / INVALID
+                    </h2>
+                    <p className="text-xs text-red-400/80">
+                      Signature mismatch. The document content was modified
+                      after signing.
+                    </p>
                   </div>
                 </div>
               )}
 
               {result.result === "NOT_FOUND" && (
-                <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-5 flex items-center gap-3">
-                  <HugeiconsIcon icon={Alert02Icon} className="size-10 text-amber-400 shrink-0" strokeWidth={2} />
+                <div className="flex items-center gap-3 border-b border-amber-500/20 bg-amber-500/10 px-6 py-5">
+                  <HugeiconsIcon
+                    icon={Alert02Icon}
+                    className="size-10 shrink-0 text-amber-400"
+                    strokeWidth={2}
+                  />
                   <div>
-                    <h2 className="text-lg font-bold text-amber-400">UNREGISTERED FILE</h2>
-                    <p className="text-xs text-amber-400/80">No digital signature matching this file was found in our ledger.</p>
+                    <h2 className="text-lg font-bold text-amber-400">
+                      UNREGISTERED FILE
+                    </h2>
+                    <p className="text-xs text-amber-400/80">
+                      No digital signature matching this file was found in our
+                      ledger.
+                    </p>
                   </div>
                 </div>
               )}
 
-              <CardContent className="p-6 space-y-6">
-                
+              <CardContent className="space-y-6 p-6">
                 {/* Document Metadata if available */}
                 {result.document && (
                   <div className="space-y-4">
-                    <div className="border-b border-slate-800 pb-4">
-                      <div className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">
+                    <div className="border-b border-border pb-4">
+                      <div className="mb-1 text-xs font-semibold tracking-wider uppercase">
                         Credential Information
                       </div>
-                      <h3 className="text-base font-bold text-slate-100">
+                      <h3 className="text-base font-bold">
                         {result.document.title}
                       </h3>
-                      <div className="text-xs text-slate-400 mt-0.5">
-                        {result.document.originalFilename} ({formatBytes(result.document.fileSize)})
+                      <div className="mt-0.5 text-xs">
+                        {result.document.originalFilename} (
+                        {formatBytes(result.document.fileSize)})
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 text-xs">
                       <div>
-                        <span className="text-slate-450 block font-semibold text-slate-400">Credential Type</span>
-                        <span className="inline-flex items-center rounded-md bg-slate-800 border border-slate-700 px-2 py-0.5 mt-1 font-semibold text-slate-200">
+                        <span className="text-slate-450 block font-semibold">
+                          Credential Type
+                        </span>
+                        <span className="mt-1 inline-flex items-center rounded-md border border-border px-2 py-0.5 font-semibold text-slate-200">
                           {result.document.type}
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-450 block font-semibold text-slate-400">Issuing Authority</span>
-                        <span className="text-slate-200 font-medium block mt-1">
+                        <span className="text-slate-450 block font-semibold">
+                          Issuing Authority
+                        </span>
+                        <span className="mt-1 block font-medium">
                           {result.organization?.name || "Unknown Issuer"}
                         </span>
                       </div>
                       <div className="col-span-2">
-                        <span className="text-slate-450 block font-semibold text-slate-400">Date Issued</span>
-                        <span className="text-slate-300 block mt-1">
-                          {new Date(result.document.createdAt).toLocaleString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                        <span className="text-slate-450 block font-semibold">
+                          Date Issued
+                        </span>
+                        <span className="mt-1 block">
+                          {new Date(result.document.createdAt).toLocaleString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
                         </span>
                       </div>
                       <div className="col-span-2">
-                        <span className="text-slate-450 block font-semibold text-slate-400">Cryptographic Standard</span>
-                        <span className="text-slate-300 font-mono block mt-1">
+                        <span className="text-slate-450 block font-semibold">
+                          Cryptographic Standard
+                        </span>
+                        <span className="mt-1 block font-mono">
                           SHA-256 hashing + RSA-2048 Digital Signature
                         </span>
                       </div>
@@ -309,34 +394,59 @@ const Verification = () => {
 
                 {/* Not found message details */}
                 {result.result === "NOT_FOUND" && (
-                  <div className="text-sm text-slate-400 leading-normal flex items-start gap-2 bg-slate-950 p-4 border border-slate-800 rounded-lg">
-                    <HugeiconsIcon icon={InformationCircleIcon} className="size-5 text-amber-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
+                    <HugeiconsIcon
+                      icon={InformationCircleIcon}
+                      className="mt-0.5 size-5 shrink-0 text-amber-400"
+                    />
                     <div>
-                      This document either has not been issued through our platform, or the file was modified since signature generation. Double-check that you uploaded the original signed PDF.
+                      This document either has not been issued through our
+                      platform, or the file was modified since signature
+                      generation. Double-check that you uploaded the original
+                      signed PDF.
                     </div>
                   </div>
                 )}
 
                 {/* Tampered warning details */}
                 {result.result === "TAMPERED" && (
-                  <div className="text-sm text-slate-400 leading-normal flex items-start gap-2 bg-slate-950 p-4 border border-slate-800 rounded-lg">
-                    <HugeiconsIcon icon={InformationCircleIcon} className="size-5 text-red-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
+                    <HugeiconsIcon
+                      icon={InformationCircleIcon}
+                      className="mt-0.5 size-5 shrink-0 text-red-400"
+                    />
                     <div>
-                      The cryptographic validation failed. This indicates that one or more characters, images, or elements of the PDF file were altered. Do not trust the contents of this document.
+                      The cryptographic validation failed. This indicates that
+                      one or more characters, images, or elements of the PDF
+                      file were altered. Do not trust the contents of this
+                      document.
                     </div>
                   </div>
                 )}
               </CardContent>
-              
-              <CardFooter className="bg-slate-950/40 p-4 border-t border-slate-800 flex justify-between gap-3">
-                <Button variant="outline" size="sm" onClick={handleReset} className="border-slate-800 hover:bg-slate-900 text-slate-300 font-medium">
+
+              <CardFooter className="flex justify-between gap-3 border-t p-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleReset}
+                  className="font-medium"
+                >
                   Verify Another File
                 </Button>
                 {result.document && (
                   <Button asChild size="sm" className="font-semibold">
-                    <a href={result.document.fileUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+                    <a
+                      href={result.document.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1"
+                    >
                       Download PDF
-                      <HugeiconsIcon icon={ArrowRight01Icon} className="size-4" />
+                      <HugeiconsIcon
+                        icon={ArrowRight01Icon}
+                        className="size-4"
+                      />
                     </a>
                   </Button>
                 )}
@@ -346,11 +456,14 @@ const Verification = () => {
 
           {/* Form manual Upload */}
           {!loading && !uploadingFile && !result && (
-            <Card className="border-slate-800 bg-slate-900 shadow-xl">
+            <Card className="shadow-xl">
               <CardHeader>
-                <CardTitle className="text-lg text-slate-200">Manual File Verification</CardTitle>
-                <CardDescription className="text-slate-450">
-                  Upload the issued PDF document to compute its cryptographic hash and cross-reference the ledger.
+                <CardTitle className="text-lg">
+                  Manual File Verification
+                </CardTitle>
+                <CardDescription className="">
+                  Upload the issued PDF document to compute its cryptographic
+                  hash and cross-reference the ledger.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -360,10 +473,8 @@ const Verification = () => {
                   onDragLeave={handleDrag}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-10 cursor-pointer transition-all text-center ${
-                    dragActive
-                      ? "border-primary bg-primary/5"
-                      : "border-slate-800 hover:border-slate-700 hover:bg-slate-800/10 bg-slate-950/40"
+                  className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-10 text-center transition-all ${
+                    dragActive ? "border-border" : ""
                   }`}
                 >
                   <input
@@ -373,32 +484,26 @@ const Verification = () => {
                     onChange={handleFileChange}
                     className="hidden"
                   />
-                  <HugeiconsIcon icon={FileUploadIcon} className="size-12 text-slate-400 mb-3" strokeWidth={1.5} />
-                  <p className="text-sm font-medium text-slate-200">
+                  <HugeiconsIcon
+                    icon={FileUploadIcon}
+                    className="mb-3 size-12"
+                    strokeWidth={1.5}
+                  />
+                  <p className="text-sm font-medium">
                     Drag & drop the signed PDF here
                   </p>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="mt-1 text-xs">
                     or click to browse your local files
                   </p>
                 </div>
               </CardContent>
             </Card>
           )}
-          
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950/40 text-slate-500 py-6 text-center text-xs">
-        <div className="mx-auto max-w-5xl px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 VeriSign System. All rights reserved.</p>
-          <div className="flex gap-4">
-            <Link to="/auth/sign-in" className="hover:text-slate-350">Dashboard</Link>
-            <span className="text-slate-850">|</span>
-            <a href="https://docs.uploadthing.com" target="_blank" rel="noopener noreferrer" className="hover:text-slate-350">UploadThing API</a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

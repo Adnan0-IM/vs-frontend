@@ -18,7 +18,7 @@ import { Link } from "react-router"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, Controller } from "react-hook-form"
-import { useNavigate } from "react-router"
+import { useNavigate, useSearchParams } from "react-router"
 import { useState } from "react"
 import * as z from "zod"
 import { signupFormSchema } from "@/features/auth/schemas/sign-up-schema"
@@ -29,6 +29,10 @@ export function SignUpForm({
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  // Where to send the user once the whole auth flow completes (e.g. back to
+  // an invitation page). Carried through to sign-in after account creation.
+  const redirectTo = searchParams.get("redirectTo")
   const [errorMessage, setErrorMessage] = useState("")
   const form = useForm<z.infer<typeof signupFormSchema>>({
     resolver: zodResolver(signupFormSchema),
@@ -50,7 +54,13 @@ export function SignUpForm({
         password: data.password,
       })
 
-      navigate("/auth/sign-in")
+      // Carry the redirect destination (e.g. an invitation link) through to
+      // sign-in so the flow can resume after the user signs in.
+      navigate(
+        redirectTo
+          ? `/auth/sign-in?redirectTo=${encodeURIComponent(redirectTo)}`
+          : "/auth/sign-in"
+      )
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Sign up failed."
@@ -177,7 +187,15 @@ export function SignUpForm({
                 </Button>
                 <FieldDescription className="text-center">
                   Already have an account?{" "}
-                  <Link to="/auth/sign-in">Sign in</Link>
+                  <Link
+                    to={
+                      redirectTo
+                        ? `/auth/sign-in?redirectTo=${encodeURIComponent(redirectTo)}`
+                        : "/auth/sign-in"
+                    }
+                  >
+                    Sign in
+                  </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

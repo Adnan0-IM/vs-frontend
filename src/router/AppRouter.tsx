@@ -20,11 +20,18 @@ import Settings from "@/features/app/sections/Settings"
 import Dashboard from "@/features/app/Dashboard"
 import AccountSettings from "@/features/app/sections/AccountSettings"
 import OrgSetup from "@/features/app/OrgSetup"
+import InvitationAccept from "@/features/app/InvitationAccept"
+import { Loading03Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 
 const NavigationLoading = () => {
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-4 md:px-8 md:py-8 lg:px-4 flex items-center justify-center">
-      <p>Loading...</p>
+    <div className="flex items-center justify-center min-h-screen w-full">
+      <HugeiconsIcon
+        icon={Loading03Icon}
+        className="size-8 animate-spin text-primary"
+        strokeWidth={2}
+      />
     </div>
   )
 }
@@ -95,7 +102,9 @@ const requireAuth = async ({ request }: { request: Request }) => {
 
   if (error || !session?.session?.token) {
     const url = new URL(request.url)
-    throw redirect(`/auth/sign-in?redirectTo=${encodeURIComponent(url.pathname + url.search)}`)
+    throw redirect(
+      `/auth/sign-in?redirectTo=${encodeURIComponent(url.pathname + url.search)}`
+    )
   }
 
   const { data: organizations } = await authClient.organization.list()
@@ -109,7 +118,7 @@ const requireAuth = async ({ request }: { request: Request }) => {
     }
   } else {
     // If user has organizations, make sure an active organization is set
-    const activeOrgId = (session.session).activeOrganizationId
+    const activeOrgId = session.session.activeOrganizationId
     if (!activeOrgId) {
       await authClient.organization.setActive({
         organizationId: organizations[0].id,
@@ -120,7 +129,7 @@ const requireAuth = async ({ request }: { request: Request }) => {
       throw redirect("/dashboard")
     }
   }
-  
+
   return session?.session?.token
 }
 
@@ -144,6 +153,10 @@ const router = createBrowserRouter([
       {
         path: "verification",
         element: <Verification />,
+      },
+      {
+        path: "invitation/:invitationId",
+        element: <InvitationAccept />,
       },
       {
         path: "dashboard",

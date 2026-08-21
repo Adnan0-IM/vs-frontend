@@ -18,7 +18,7 @@ import { Link } from "react-router"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, Controller } from "react-hook-form"
-import { useNavigate } from "react-router"
+import { useNavigate, useSearchParams } from "react-router"
 import { useState } from "react"
 import * as z from "zod"
 import { signinFormSchema } from "@/features/auth/schemas/sign-in-schema"
@@ -29,6 +29,10 @@ export function SignInForm({
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  // Where to send the user after a successful sign-in (e.g. back to an
+  // invitation page). Preserved across the sign-in <-> sign-up round trip.
+  const redirectTo = searchParams.get("redirectTo")
   const [errorMessage, setErrorMessage] = useState("")
   const form = useForm<z.infer<typeof signinFormSchema>>({
     resolver: zodResolver(signinFormSchema),
@@ -47,9 +51,11 @@ export function SignInForm({
         password: data.password,
       })
 
-      console.log("Navigation starts")
-      navigate("/dashboard")
-      console.log("Navigation ends")
+      // Return the user to where they came from (e.g. an invitation link)
+      // instead of the dashboard. Only allow internal paths.
+      navigate(
+        redirectTo && redirectTo.startsWith("/") ? redirectTo : "/dashboard"
+      )
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "Sign in failed."
@@ -128,7 +134,15 @@ export function SignInForm({
                 </Button>
                 <FieldDescription className="text-center">
                   Don&apos;t have an account?{" "}
-                  <Link to="/auth/sign-up">Sign up</Link>
+                  <Link
+                    to={
+                      redirectTo
+                        ? `/auth/sign-up?redirectTo=${encodeURIComponent(redirectTo)}`
+                        : "/auth/sign-up"
+                    }
+                  >
+                    Sign up
+                  </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

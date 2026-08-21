@@ -1,7 +1,11 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Link } from "react-router"
-import { fetchDocuments, revokeDocument, type SignedDocument } from "../api/documents"
+import {
+  fetchDocuments,
+  revokeDocument,
+  type SignedDocument,
+} from "../api/documents"
 import Layout from "../components/Layout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,11 +29,14 @@ const Documents = () => {
   const [search, setSearch] = useState("")
   const [typeFilter, setTypeFilter] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
-  
+
   // Modals state
-  const [selectedQrDoc, setSelectedQrDoc] = useState<SignedDocument | null>(null)
-  const [revokeConfirmDoc, setRevokeConfirmDoc] = useState<SignedDocument | null>(null)
-  
+  const [selectedQrDoc, setSelectedQrDoc] = useState<SignedDocument | null>(
+    null
+  )
+  const [revokeConfirmDoc, setRevokeConfirmDoc] =
+    useState<SignedDocument | null>(null)
+
   // Printing state
   const [isPrinting, setIsPrinting] = useState<string | null>(null)
 
@@ -40,12 +47,12 @@ const Documents = () => {
       const response = await fetch(url)
       const blob = await response.blob()
       const blobUrl = URL.createObjectURL(blob)
-      
+
       const iframe = document.createElement("iframe")
       iframe.style.display = "none"
       iframe.src = blobUrl
       document.body.appendChild(iframe)
-      
+
       iframe.onload = () => {
         iframe.contentWindow?.focus()
         iframe.contentWindow?.print()
@@ -65,18 +72,24 @@ const Documents = () => {
   }
 
   const { data: activeMember } = authClient.useActiveMember()
-  
+
   // Check if current user is owner or admin in the organization
-  const canRevoke = activeMember?.role === "owner" || activeMember?.role === "admin"
+  const canRevoke =
+    activeMember?.role === "owner" || activeMember?.role === "admin"
 
   // Fetch documents using React Query
-  const { data: documents = [], isLoading, error } = useQuery({
+  const {
+    data: documents = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["documents", search, typeFilter, statusFilter],
-    queryFn: () => fetchDocuments({
-      search: search || undefined,
-      type: typeFilter || undefined,
-      status: statusFilter || undefined,
-    }),
+    queryFn: () =>
+      fetchDocuments({
+        search: search || undefined,
+        type: typeFilter || undefined,
+        status: statusFilter || undefined,
+      }),
   })
 
   // Revoke document mutation
@@ -88,15 +101,23 @@ const Documents = () => {
       setRevokeConfirmDoc(null)
     },
     onError: (err: unknown) => {
-      const error = err as { response?: { data?: { error?: string } }; message?: string };
-      const errMsg = error.response?.data?.error || error.message || "Failed to revoke document";
+      const error = err as {
+        response?: { data?: { error?: string } }
+        message?: string
+      }
+      const errMsg =
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to revoke document"
       toast.error(errMsg)
     },
   })
 
   const handleRevoke = (doc: SignedDocument) => {
     if (!canRevoke) {
-      toast.error("Forbidden: Only organization owners and admins can revoke documents.")
+      toast.error(
+        "Forbidden: Only organization owners and admins can revoke documents."
+      )
       return
     }
     setRevokeConfirmDoc(doc)
@@ -161,12 +182,16 @@ const Documents = () => {
             <h1 className="text-3xl font-semibold tracking-tight text-foreground">
               Documents
             </h1>
-            <p className="max-w-2xl text-muted-foreground text-sm">
-              Manage, monitor, and issue cryptographically secure digital credentials.
+            <p className="max-w-2xl text-sm text-muted-foreground">
+              Manage, monitor, and issue cryptographically secure digital
+              credentials.
             </p>
           </div>
           <Button asChild className="shrink-0 font-medium">
-            <Link to="/dashboard/upload-document" className="flex items-center gap-2">
+            <Link
+              to="/dashboard/upload-document"
+              className="flex items-center gap-2"
+            >
               <HugeiconsIcon icon={AddCircleIcon} className="size-5" />
               Issue Document
             </Link>
@@ -175,11 +200,11 @@ const Documents = () => {
 
         {/* Filter bar */}
         <Card className="border-border bg-card shadow-sm">
-          <CardContent className="p-4 flex flex-col md:flex-row gap-3">
+          <CardContent className="flex flex-col gap-3 p-4 md:flex-row">
             <div className="relative flex-1">
               <HugeiconsIcon
                 icon={Search01Icon}
-                className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
               />
               <Input
                 placeholder="Search by title or filename..."
@@ -188,14 +213,18 @@ const Documents = () => {
                 className="pl-9"
               />
             </div>
-            
+
             <div className="flex flex-wrap gap-2 md:w-auto">
               <select
                 value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-primary"
+                onChange={(e) =>
+                  setTypeFilter(
+                    e.target.value === "__all_types__" ? "" : e.target.value
+                  )
+                }
+                className="h-10 cursor-pointer rounded-md border border-input bg-transparent px-2.5 text-sm outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               >
-                <option value="">All Types</option>
+                <option value="__all_types__">All Types</option>
                 <option value="Certificate">Certificate</option>
                 <option value="Transcript">Transcript</option>
                 <option value="Letter">Letter</option>
@@ -205,10 +234,14 @@ const Documents = () => {
 
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-primary"
+                onChange={(e) =>
+                  setStatusFilter(
+                    e.target.value === "__all_statuses__" ? "" : e.target.value
+                  )
+                }
+                className="h-10 cursor-pointer rounded-md border border-input bg-transparent px-2.5 text-sm outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               >
-                <option value="">All Statuses</option>
+                <option value="__all_statuses__">All Statuses</option>
                 <option value="ACTIVE">Active</option>
                 <option value="REVOKED">Revoked</option>
               </select>
@@ -219,70 +252,94 @@ const Documents = () => {
         {/* Table/List area */}
         {isLoading ? (
           <div className="flex h-64 w-full items-center justify-center">
-            <HugeiconsIcon icon={Loading03Icon} className="size-8 text-primary animate-spin" strokeWidth={2} />
+            <HugeiconsIcon
+              icon={Loading03Icon}
+              className="size-8 animate-spin text-primary"
+              strokeWidth={2}
+            />
           </div>
         ) : error ? (
           <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-6 text-center text-sm text-destructive">
-            Failed to load documents. Please check your connection or refresh the page.
+            Failed to load documents. Please check your connection or refresh
+            the page.
           </div>
         ) : documents.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border bg-muted/10 p-12 text-center">
-            <HugeiconsIcon icon={Files02Icon} className="mx-auto size-12 text-muted-foreground/60 mb-3" strokeWidth={1.5} />
-            <h3 className="text-base font-semibold text-foreground">No documents found</h3>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
+            <HugeiconsIcon
+              icon={Files02Icon}
+              className="mx-auto mb-3 size-12 text-muted-foreground/60"
+              strokeWidth={1.5}
+            />
+            <h3 className="text-base font-semibold text-foreground">
+              No documents found
+            </h3>
+            <p className="mx-auto mt-1 mb-4 max-w-sm text-sm text-muted-foreground">
               {search || typeFilter || statusFilter
                 ? "No credentials match your active filters. Try adjusting your query."
                 : "Your organization hasn't issued any digital credentials yet."}
             </p>
             {!search && !typeFilter && !statusFilter && (
               <Button asChild variant="outline" size="sm">
-                <Link to="/dashboard/upload-document">Upload your first document</Link>
+                <Link to="/dashboard/upload-document">
+                  Upload your first document
+                </Link>
               </Button>
             )}
           </div>
         ) : (
-          <div className="rounded-lg border border-border bg-card overflow-hidden shadow-sm">
-            <div className="overflow-x-auto w-full">
-              <table className="w-full text-left border-collapse text-sm">
+          <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+            <div className="w-full overflow-x-auto">
+              <table className="w-full border-collapse text-left text-sm">
                 <thead>
-                  <tr className="border-b border-border bg-muted/40 text-muted-foreground font-medium">
+                  <tr className="border-b border-border bg-muted/40 font-medium text-muted-foreground">
                     <th className="p-4">Document</th>
                     <th className="p-4">Type</th>
-                    <th className="p-4 hidden md:table-cell">Issued By</th>
-                    <th className="p-4 hidden sm:table-cell">Date</th>
+                    <th className="hidden p-4 md:table-cell">Issued By</th>
+                    <th className="hidden p-4 sm:table-cell">Date</th>
                     <th className="p-4">Status</th>
                     <th className="p-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {documents.map((doc) => (
-                    <tr key={doc.id} className="hover:bg-muted/15 transition-colors">
+                    <tr
+                      key={doc.id}
+                      className="transition-colors hover:bg-muted/15"
+                    >
                       <td className="p-4">
-                        <div className="font-semibold text-foreground truncate max-w-xs sm:max-w-md">
+                        <div className="max-w-xs truncate font-semibold text-foreground sm:max-w-md">
                           {doc.title}
                         </div>
-                        <div className="text-xs text-muted-foreground truncate max-w-xs sm:max-w-md">
+                        <div className="max-w-xs truncate text-xs text-muted-foreground sm:max-w-md">
                           {doc.originalFilename} ({formatBytes(doc.fileSize)})
                         </div>
                       </td>
                       <td className="p-4">
-                        <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold border ${getTypeBadgeStyles(doc.type)}`}>
+                        <span
+                          className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold ${getTypeBadgeStyles(doc.type)}`}
+                        >
                           {doc.type}
                         </span>
                       </td>
-                      <td className="p-4 hidden md:table-cell">
-                        <div className="text-foreground font-medium">{doc.signer?.name || "Unknown"}</div>
-                        <div className="text-xs text-muted-foreground">{doc.signer?.email}</div>
+                      <td className="hidden p-4 md:table-cell">
+                        <div className="font-medium text-foreground">
+                          {doc.signer?.name || "Unknown"}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {doc.signer?.email}
+                        </div>
                       </td>
-                      <td className="p-4 hidden sm:table-cell text-muted-foreground">
+                      <td className="hidden p-4 text-muted-foreground sm:table-cell">
                         {formatDate(doc.createdAt)}
                       </td>
                       <td className="p-4">
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                          doc.status === "ACTIVE"
-                            ? "bg-emerald-500/10 text-emerald-500"
-                            : "bg-rose-500/10 text-rose-500"
-                        }`}>
+                        <span
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                            doc.status === "ACTIVE"
+                              ? "bg-emerald-500/10 text-emerald-500"
+                              : "bg-rose-500/10 text-rose-500"
+                          }`}
+                        >
                           {doc.status}
                         </span>
                       </td>
@@ -293,19 +350,29 @@ const Documents = () => {
                             size="icon"
                             title="Verification QR Code"
                             onClick={() => setSelectedQrDoc(doc)}
-                            className="text-muted-foreground hover:text-foreground size-8"
+                            className="size-8 text-muted-foreground hover:text-foreground"
                           >
-                            <HugeiconsIcon icon={QrCode01Icon} className="size-4" />
+                            <HugeiconsIcon
+                              icon={QrCode01Icon}
+                              className="size-4"
+                            />
                           </Button>
                           <Button
                             asChild
                             variant="ghost"
                             size="icon"
                             title="Download Signed File"
-                            className="text-muted-foreground hover:text-primary size-8"
+                            className="size-8 text-muted-foreground hover:text-primary"
                           >
-                            <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
-                              <HugeiconsIcon icon={Download02Icon} className="size-4" />
+                            <a
+                              href={doc.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <HugeiconsIcon
+                                icon={Download02Icon}
+                                className="size-4"
+                              />
                             </a>
                           </Button>
                           <Button
@@ -314,15 +381,21 @@ const Documents = () => {
                             title="Print Signed File"
                             disabled={isPrinting !== null}
                             onClick={() => handlePrintPdf(doc.fileUrl, doc.id)}
-                            className="text-muted-foreground hover:text-primary size-8"
+                            className="size-8 text-muted-foreground hover:text-primary"
                           >
                             {isPrinting === doc.id ? (
-                              <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
+                              <HugeiconsIcon
+                                icon={Loading03Icon}
+                                className="size-4 animate-spin"
+                              />
                             ) : (
-                              <HugeiconsIcon icon={PrinterIcon} className="size-4" />
+                              <HugeiconsIcon
+                                icon={PrinterIcon}
+                                className="size-4"
+                              />
                             )}
                           </Button>
-                          
+
                           {doc.status === "ACTIVE" && (
                             <Button
                               variant="ghost"
@@ -330,9 +403,12 @@ const Documents = () => {
                               title="Revoke Credential"
                               disabled={!canRevoke}
                               onClick={() => handleRevoke(doc)}
-                              className="text-muted-foreground hover:text-destructive size-8 disabled:opacity-30"
+                              className="size-8 text-muted-foreground hover:text-destructive disabled:opacity-30"
                             >
-                              <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
+                              <HugeiconsIcon
+                                icon={Cancel01Icon}
+                                className="size-4"
+                              />
                             </Button>
                           )}
                         </div>
@@ -348,11 +424,14 @@ const Documents = () => {
 
       {/* QR Code Modal */}
       {selectedQrDoc && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-card border border-border rounded-xl shadow-lg w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <h3 className="font-semibold text-foreground flex items-center gap-2">
-                <HugeiconsIcon icon={QrCode01Icon} className="size-5 text-primary" />
+        <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-background/80 p-4 backdrop-blur-sm duration-200 fade-in">
+          <div className="w-full max-w-md animate-in overflow-hidden rounded-xl border border-border bg-card shadow-lg duration-200 zoom-in-95">
+            <div className="flex items-center justify-between border-b border-border p-4">
+              <h3 className="flex items-center gap-2 font-semibold text-foreground">
+                <HugeiconsIcon
+                  icon={QrCode01Icon}
+                  className="size-5 text-primary"
+                />
                 Verification Portal QR
               </h3>
               <Button
@@ -364,16 +443,16 @@ const Documents = () => {
                 <HugeiconsIcon icon={Cancel01Icon} className="size-4" />
               </Button>
             </div>
-            
-            <div className="p-6 flex flex-col items-center text-center gap-4">
-              <div className="font-semibold text-foreground text-sm line-clamp-1">
+
+            <div className="flex flex-col items-center gap-4 p-6 text-center">
+              <div className="line-clamp-1 text-sm font-semibold text-foreground">
                 {selectedQrDoc.title}
               </div>
-              <p className="text-xs text-muted-foreground -mt-2">
+              <p className="-mt-2 text-xs text-muted-foreground">
                 Scan this code to verify document authenticity instantly.
               </p>
-              
-              <div className="bg-white p-3 rounded-lg border border-border shadow-sm">
+
+              <div className="rounded-lg border border-border bg-white p-3 shadow-sm">
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
                     getVerificationUrl(selectedQrDoc.verificationToken)
@@ -383,18 +462,20 @@ const Documents = () => {
                 />
               </div>
 
-              <div className="w-full bg-muted/40 rounded-lg border border-border p-3 flex flex-col gap-2">
-                <div className="text-xs font-semibold text-foreground text-left">
+              <div className="flex w-full flex-col gap-2 rounded-lg border border-border bg-muted/40 p-3">
+                <div className="text-left text-xs font-semibold text-foreground">
                   Verification URL:
                 </div>
-                <div className="text-xs text-muted-foreground select-all break-all text-left font-mono">
+                <div className="text-left font-mono text-xs break-all text-muted-foreground select-all">
                   {getVerificationUrl(selectedQrDoc.verificationToken)}
                 </div>
-                <div className="flex gap-2 mt-1">
+                <div className="mt-1 flex gap-2">
                   <Button
                     size="sm"
                     className="flex-1 text-xs"
-                    onClick={() => handleCopyLink(selectedQrDoc.verificationToken)}
+                    onClick={() =>
+                      handleCopyLink(selectedQrDoc.verificationToken)
+                    }
                   >
                     Copy Link
                   </Button>
@@ -421,17 +502,22 @@ const Documents = () => {
 
       {/* Revocation Confirmation Modal */}
       {revokeConfirmDoc && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-card border border-border rounded-xl shadow-lg w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 space-y-4">
-              <h3 className="font-semibold text-foreground text-lg">
+        <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-background/80 p-4 backdrop-blur-sm duration-200 fade-in">
+          <div className="w-full max-w-md animate-in overflow-hidden rounded-xl border border-border bg-card shadow-lg duration-200 zoom-in-95">
+            <div className="space-y-4 p-6">
+              <h3 className="text-lg font-semibold text-foreground">
                 Revoke Digital Credential?
               </h3>
-              <p className="text-sm text-muted-foreground leading-normal">
-                Are you sure you want to revoke <span className="font-semibold text-foreground">"{revokeConfirmDoc.title}"</span>? 
-                This action is permanent. Once revoked, anyone scanning the QR code or verifying the file will see that this credential is no longer valid.
+              <p className="text-sm leading-normal text-muted-foreground">
+                Are you sure you want to revoke{" "}
+                <span className="font-semibold text-foreground">
+                  "{revokeConfirmDoc.title}"
+                </span>
+                ? This action is permanent. Once revoked, anyone scanning the QR
+                code or verifying the file will see that this credential is no
+                longer valid.
               </p>
-              
+
               <div className="flex justify-end gap-3 pt-2">
                 <Button
                   variant="outline"
@@ -446,7 +532,9 @@ const Documents = () => {
                   disabled={revokeMutation.isPending}
                   className="font-medium"
                 >
-                  {revokeMutation.isPending ? "Revoking..." : "Revoke Credential"}
+                  {revokeMutation.isPending
+                    ? "Revoking..."
+                    : "Revoke Credential"}
                 </Button>
               </div>
             </div>

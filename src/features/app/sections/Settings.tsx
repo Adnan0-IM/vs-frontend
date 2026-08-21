@@ -55,6 +55,8 @@ const Settings = () => {
   // Danger Zone States
   const [isDeletingOrg, setIsDeletingOrg] = useState(false)
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
+  const [deleteOrgConfirmOpen, setDeleteOrgConfirmOpen] = useState(false)
+  const [deleteAccountConfirmOpen, setDeleteAccountConfirmOpen] = useState(false)
 
   const isOwnerOrAdmin = activeMember?.role === "owner" || activeMember?.role === "admin"
 
@@ -166,13 +168,15 @@ const Settings = () => {
     }
   }
 
-  // Delete Organization Handler
-  const handleDeleteOrganization = async () => {
+  // Delete Organization Handler (opens confirmation modal)
+  const handleDeleteOrganization = () => {
     if (!activeOrg?.id) return
-    const confirmPrompt = confirm(
-      "WARNING: Are you sure you want to permanently delete this organization? This action is IRREVERSIBLE. It will delete all member memberships, remove all issued document ledgers, and invalidate all digital signature verifications."
-    )
-    if (!confirmPrompt) return
+    setDeleteOrgConfirmOpen(true)
+  }
+
+  // Confirm Delete Organization
+  const confirmDeleteOrganization = async () => {
+    if (!activeOrg?.id) return
 
     setIsDeletingOrg(true)
     const toastId = toast.loading("Deleting organization...")
@@ -181,7 +185,8 @@ const Settings = () => {
         organizationId: activeOrg.id,
       })
       if (error) throw error
-      
+
+      setDeleteOrgConfirmOpen(false)
       toast.success("Organization deleted successfully.", { id: toastId })
       navigate("/dashboard")
     } catch (err: any) {
@@ -191,25 +196,29 @@ const Settings = () => {
     }
   }
 
-  // Delete Personal User Account Handler
-  const handleDeleteAccount = async () => {
-    const confirmPrompt = confirm(
-      "WARNING: Are you sure you want to permanently delete your personal account? This action is IRREVERSIBLE. You will be permanently signed out and your account credentials will be removed."
-    )
-    if (!confirmPrompt) return
+  // Delete Personal Account Handler (opens confirmation modal)
+  const handleDeleteAccount = () => {
+    setDeleteAccountConfirmOpen(true)
+  }
 
+  // Confirm Delete Account
+  const confirmDeleteAccount = async () => {
     setIsDeletingAccount(true)
+    console.log("deleting")
     const toastId = toast.loading("Deleting your personal account...")
     try {
       const { error } = await authClient.deleteUser()
       if (error) throw error
-      
+      console.log("deleting 2")
+      setDeleteAccountConfirmOpen(false)
       toast.success("Account deleted. Redirecting...", { id: toastId })
       navigate("/auth/sign-in")
     } catch (err: any) {
       toast.error(err.message || "Failed to delete user account.", { id: toastId })
+      console.log("deleting error")
     } finally {
       setIsDeletingAccount(false)
+      console.log("dlelting done")
     }
   }
 
@@ -239,7 +248,6 @@ const Settings = () => {
         return "bg-slate-500/10 text-slate-500 border-slate-500/20"
     }
   }
-
   return (
     <Layout>
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-6 md:px-8 md:py-8 font-sans">
@@ -306,7 +314,7 @@ const Settings = () => {
                     />
                   </div>
                 </CardContent>
-                <CardFooter className="bg-muted/30 border-t border-border p-4 flex justify-end">
+                <CardFooter className="bg-muted/30 border-t border-border p-4 mt-6 flex justify-end">
                   <Button type="submit" disabled={isUpdatingProfile || userName === user?.name} size="sm" className="font-semibold">
                     {isUpdatingProfile ? (
                       <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
@@ -374,7 +382,7 @@ const Settings = () => {
                     />
                   </div>
                 </CardContent>
-                <CardFooter className="bg-muted/30 border-t border-border p-4 flex justify-end">
+                <CardFooter className="bg-muted/30 border-t border-border p-4 mt-6 flex justify-end">
                   <Button type="submit" disabled={isChangingPassword} size="sm" className="font-semibold">
                     {isChangingPassword ? (
                       <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
@@ -471,7 +479,7 @@ const Settings = () => {
                   </CardContent>
                   
                   {isOwnerOrAdmin && (
-                    <CardFooter className="bg-muted/30 border-t border-border p-4 flex justify-end">
+                    <CardFooter className="bg-muted/30 border-t border-border mt-6 p-4 flex justify-end">
                       <Button 
                         type="submit" 
                         disabled={isUpdatingOrg || (orgName === activeOrg?.name && orgLogo === activeOrg?.logo)} 
@@ -515,7 +523,7 @@ const Settings = () => {
                   )}
                 </CardContent>
                 {activeOrg?.publicKey && (
-                  <CardFooter className="bg-muted/30 border-t border-border p-4 flex justify-end">
+                  <CardFooter className="bg-muted/30 border-t border-border mt-6 p-4 flex justify-end">
                     <Button variant="outline" size="sm" onClick={handleCopyKey} className="font-semibold">
                       Copy Public Key
                     </Button>
@@ -582,7 +590,7 @@ const Settings = () => {
           <div className="grid gap-6 md:grid-cols-2">
             
             {/* Delete Organization Card */}
-            <Card className="border-destructive/20 bg-destructive/5 shadow-sm h-fit">
+            <Card className="border-destructive/20  shadow-sm h-fit">
               <CardHeader>
                 <CardTitle className="text-sm font-semibold text-destructive">Delete Organization</CardTitle>
                 <CardDescription className="text-xs text-destructive/80">
@@ -615,7 +623,8 @@ const Settings = () => {
             </Card>
 
             {/* Delete Account Card */}
-            <Card className="border-destructive/20 bg-destructive/5 shadow-sm h-fit">
+            <Card className="border-destructive/20  shadow-sm h-fit">
+
               <CardHeader>
                 <CardTitle className="text-sm font-semibold text-destructive">Delete Personal Account</CardTitle>
                 <CardDescription className="text-xs text-destructive/80">
@@ -646,6 +655,77 @@ const Settings = () => {
           </div>
         </div>
 
+        {/* Delete Organization Confirmation Modal */}
+        {deleteOrgConfirmOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-card border border-border rounded-xl shadow-lg w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+              <div className="p-6 space-y-4">
+                <h3 className="font-semibold text-foreground text-lg">
+                  Delete Organization?
+                </h3>
+                <p className="text-sm text-muted-foreground leading-normal">
+                  Are you sure you want to permanently delete <span className="font-semibold text-foreground">"{activeOrg?.name}"</span>? 
+                  This action is <span className="font-semibold text-destructive">IRREVERSIBLE</span>. 
+                  It will delete all memberships, remove all issued document ledgers, and invalidate all digital signature verifications.
+                </p>
+                
+                <div className="flex justify-end gap-3 pt-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setDeleteOrgConfirmOpen(false)}
+                    disabled={isDeletingOrg}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={confirmDeleteOrganization}
+                    disabled={isDeletingOrg}
+                    className="font-medium"
+                  >
+                    {isDeletingOrg ? "Deleting..." : "Delete Organization"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Account Confirmation Modal */}
+        {deleteAccountConfirmOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-card border border-border rounded-xl shadow-lg w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+              <div className="p-6 space-y-4">
+                <h3 className="font-semibold text-foreground text-lg">
+                  Delete Personal Account?
+                </h3>
+                <p className="text-sm text-muted-foreground leading-normal">
+                  Are you sure you want to permanently delete your personal account? 
+                  This action is <span className="font-semibold text-destructive">IRREVERSIBLE</span>. 
+                  You will be permanently signed out and your account credentials will be removed.
+                </p>
+                
+                <div className="flex justify-end gap-3 pt-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setDeleteAccountConfirmOpen(false)}
+                    disabled={isDeletingAccount}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={confirmDeleteAccount}
+                    disabled={isDeletingAccount}
+                    className="font-medium"
+                  >
+                    {isDeletingAccount ? "Deleting..." : "Delete Account"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   )

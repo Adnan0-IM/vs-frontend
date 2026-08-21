@@ -50,7 +50,7 @@ const OrgSetup = () => {
     setSubmitMessage("Organization created successfully.")
 
     if (createdOrganization?.id) {
-      navigate(`/dashboard/organization`)
+      navigate(`/dashboard`)
     }
   }
 

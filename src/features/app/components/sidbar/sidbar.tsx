@@ -22,9 +22,9 @@ import { Link } from "react-router"
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "Adnan",
+    email: "adnan@gmail.com",
+    avatar: "",
   },
   navMain: [
     {
@@ -84,9 +84,36 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       }
     : data.user
   if (!organizations || organizations.length === 0) {
-    return <div>no org</div>
+    return (
+      <Sidebar variant="inset" {...props}>
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg" asChild>
+                <Link to="#">
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                    <img src={""} alt="logo" />
+                  </div>
+                  <div className="grid flex-1 gap-1 text-left text-sm leading-tight">
+                    <span className="truncate font-medium">Org name</span>
+                    <span className="truncate text-xs text-muted-foreground capitalize">
+                      Org type
+                    </span>
+                  </div>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
+        <SidebarContent>
+          <NavMain items={data.navMain} />
+        </SidebarContent>
+        <SidebarFooter>
+          <NavUser user={data.user} />
+        </SidebarFooter>
+      </Sidebar>
+    )
   }
-  console.log(organizations?.[0].metadata)
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -97,7 +124,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <img
                     src={organizations?.[0]?.logo as string | undefined}
-                    alt="org logo"
+                    alt="logo"
                   />
                 </div>
                 <div className="grid flex-1 gap-1 text-left text-sm leading-tight">
