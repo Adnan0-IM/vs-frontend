@@ -1,7 +1,4 @@
-import Home from "@/features/home"
-import SignUp from "@/features/auth/SignUp"
-import SignIn from "@/features/auth/SignIn"
-import Verification from "@/features/public/verification"
+import { Suspense, lazy } from "react"
 import { authClient } from "@/lib/auth-client"
 import {
   Link,
@@ -12,17 +9,28 @@ import {
   useNavigation,
   useRouteError,
 } from "react-router"
-import Documents from "@/features/app/sections/Documents"
-import UploadDocuments from "@/features/app/sections/UploadDocuments"
-import VerificationLogs from "@/features/app/sections/VerificationLogs"
-import Members from "@/features/app/sections/Members"
-import Settings from "@/features/app/sections/Settings"
-import Dashboard from "@/features/app/Dashboard"
-import AccountSettings from "@/features/app/sections/AccountSettings"
-import OrgSetup from "@/features/app/OrgSetup"
-import InvitationAccept from "@/features/app/InvitationAccept"
 import { Loading03Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+
+const Home = lazy(() => import("@/features/home"))
+const SignUp = lazy(() => import("@/features/auth/SignUp"))
+const SignIn = lazy(() => import("@/features/auth/SignIn"))
+const Verification = lazy(() => import("@/features/public/verification"))
+const Documents = lazy(() => import("@/features/app/sections/Documents"))
+const UploadDocuments = lazy(
+  () => import("@/features/app/sections/UploadDocuments")
+)
+const VerificationLogs = lazy(
+  () => import("@/features/app/sections/VerificationLogs")
+)
+const Members = lazy(() => import("@/features/app/sections/Members"))
+const Settings = lazy(() => import("@/features/app/sections/Settings"))
+const Dashboard = lazy(() => import("@/features/app/Dashboard"))
+const AccountSettings = lazy(
+  () => import("@/features/app/sections/AccountSettings")
+)
+const OrgSetup = lazy(() => import("@/features/app/OrgSetup"))
+const InvitationAccept = lazy(() => import("@/features/app/InvitationAccept"))
 
 const NavigationLoading = () => {
   return (
@@ -40,7 +48,17 @@ const AppLayout = () => {
   const navigation = useNavigation()
   const isLoading = navigation.state === "loading"
 
-  return <>{isLoading ? <NavigationLoading /> : <Outlet />}</>
+  return (
+    <>
+      {isLoading ? (
+        <NavigationLoading />
+      ) : (
+        <Suspense fallback={<NavigationLoading />}>
+          <Outlet />
+        </Suspense>
+      )}
+    </>
+  )
 }
 
 const NotFound = () => {
