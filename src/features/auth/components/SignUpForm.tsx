@@ -78,7 +78,7 @@ export function SignUpForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form noValidate onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
               <Controller
                 name="name"

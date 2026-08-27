@@ -4,7 +4,14 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Settings as SettingsIcon,
@@ -13,9 +20,8 @@ import {
   SecurityPasswordIcon,
   TickDouble01Icon,
   Building01Icon,
-  Key01Icon,
   Alert02Icon,
-  Delete02Icon
+  Delete02Icon,
 } from "@hugeicons/core-free-icons"
 import { toast } from "sonner"
 import { useNavigate } from "react-router"
@@ -31,10 +37,13 @@ const organizationTypes = [
 const Settings = () => {
   const navigate = useNavigate()
   const { data: session, refetch: refetchSession } = authClient.useSession()
-  const { data: activeOrgRaw, refetch: refetchOrg } = authClient.useActiveOrganization()
-  const activeOrg = activeOrgRaw as (NonNullable<typeof activeOrgRaw> & { publicKey?: string | null }) | null
+  const { data: activeOrgRaw, refetch: refetchOrg } =
+    authClient.useActiveOrganization()
+  const activeOrg = activeOrgRaw as
+    | (NonNullable<typeof activeOrgRaw> & { publicKey?: string | null })
+    | null
   const { data: activeMember } = authClient.useActiveMember()
-  
+
   const user = session?.user
 
   // Profile Form State
@@ -56,9 +65,11 @@ const Settings = () => {
   const [isDeletingOrg, setIsDeletingOrg] = useState(false)
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
   const [deleteOrgConfirmOpen, setDeleteOrgConfirmOpen] = useState(false)
-  const [deleteAccountConfirmOpen, setDeleteAccountConfirmOpen] = useState(false)
+  const [deleteAccountConfirmOpen, setDeleteAccountConfirmOpen] =
+    useState(false)
 
-  const isOwnerOrAdmin = activeMember?.role === "owner" || activeMember?.role === "admin"
+  const isOwnerOrAdmin =
+    activeMember?.role === "owner" || activeMember?.role === "admin"
 
   // Initialize profile name when session changes
   useEffect(() => {
@@ -147,24 +158,20 @@ const Settings = () => {
         data: {
           name: orgName.trim(),
           logo: orgLogo.trim() || undefined,
-        }
+        },
       })
       if (error) throw error
-      
-      toast.success("Organization settings updated successfully!", { id: toastId })
+
+      toast.success("Organization settings updated successfully!", {
+        id: toastId,
+      })
       refetchOrg()
     } catch (err: any) {
-      toast.error(err.message || "Failed to update organization details.", { id: toastId })
+      toast.error(err.message || "Failed to update organization details.", {
+        id: toastId,
+      })
     } finally {
       setIsUpdatingOrg(false)
-    }
-  }
-
-  // Copy cryptographic verification key
-  const handleCopyKey = () => {
-    if (activeOrg?.publicKey) {
-      navigator.clipboard.writeText(activeOrg.publicKey)
-      toast.success("Public verification key copied to clipboard!")
     }
   }
 
@@ -190,7 +197,9 @@ const Settings = () => {
       toast.success("Organization deleted successfully.", { id: toastId })
       navigate("/dashboard")
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete organization.", { id: toastId })
+      toast.error(err.message || "Failed to delete organization.", {
+        id: toastId,
+      })
     } finally {
       setIsDeletingOrg(false)
     }
@@ -214,7 +223,9 @@ const Settings = () => {
       toast.success("Account deleted. Redirecting...", { id: toastId })
       navigate("/auth/sign-in")
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete user account.", { id: toastId })
+      toast.error(err.message || "Failed to delete user account.", {
+        id: toastId,
+      })
       console.log("deleting error")
     } finally {
       setIsDeletingAccount(false)
@@ -226,9 +237,10 @@ const Settings = () => {
   const getOrgTypeLabel = () => {
     if (!activeOrg?.metadata) return "Other"
     try {
-      const meta = typeof activeOrg.metadata === "string" 
-        ? JSON.parse(activeOrg.metadata) 
-        : activeOrg.metadata
+      const meta =
+        typeof activeOrg.metadata === "string"
+          ? JSON.parse(activeOrg.metadata)
+          : activeOrg.metadata
       const match = organizationTypes.find((t) => t.value === meta.type)
       return match ? match.label : "Other"
     } catch (e) {
@@ -242,7 +254,7 @@ const Settings = () => {
         return "bg-amber-500/10 text-amber-500 border-amber-500/20"
       case "admin":
         return "bg-primary/10 text-primary border-primary/20"
-      case "signer":
+      case "member":
         return "bg-sky-500/10 text-sky-500 border-sky-500/20"
       default:
         return "bg-slate-500/10 text-slate-500 border-slate-500/20"
@@ -250,16 +262,19 @@ const Settings = () => {
   }
   return (
     <Layout>
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-6 md:px-8 md:py-8 font-sans">
-        
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-6 font-sans md:px-8 md:py-8">
         {/* Main Title Header */}
         <div className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground flex items-center gap-2">
-            <HugeiconsIcon icon={SettingsIcon} className="size-8 text-primary" />
+          <h1 className="flex items-center gap-2 text-3xl font-semibold tracking-tight text-foreground">
+            <HugeiconsIcon
+              icon={SettingsIcon}
+              className="size-8 text-primary"
+            />
             Workspace Settings
           </h1>
-          <p className="max-w-2xl text-muted-foreground text-sm">
-            Manage your personal profile details, account security, and active organization settings.
+          <p className="max-w-2xl text-sm text-muted-foreground">
+            Manage your personal profile details, account security, and active
+            organization settings.
           </p>
         </div>
 
@@ -267,41 +282,57 @@ const Settings = () => {
         {/* SECTION 1: Personal Account Settings */}
         {/* ============================================================== */}
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-foreground border-b border-border pb-1.5 flex items-center gap-2">
-            <HugeiconsIcon icon={UserCheck01Icon} className="size-5 text-primary" />
+          <h2 className="flex items-center gap-2 border-b border-border pb-1.5 text-lg font-semibold text-foreground">
+            <HugeiconsIcon
+              icon={UserCheck01Icon}
+              className="size-5 text-primary"
+            />
             Personal Account Settings
           </h2>
-          
+
           <div className="grid gap-6 md:grid-cols-2">
-            
             {/* Profile Details Card */}
-            <Card className="border-border bg-card shadow-sm h-fit">
+            <Card className="h-fit border-border bg-card shadow-sm">
               <CardHeader>
-                <CardTitle className="text-sm font-semibold text-foreground">Profile Information</CardTitle>
+                <CardTitle className="text-sm font-semibold text-foreground">
+                  Profile Information
+                </CardTitle>
                 <CardDescription className="text-xs">
-                  Update your account display name and view your registered email address.
+                  Update your account display name and view your registered
+                  email address.
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleUpdateProfile}>
                 <CardContent className="space-y-4">
                   {/* Email (Read-only) */}
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-xs font-semibold text-muted-foreground">Email Address</Label>
+                    <Label
+                      htmlFor="email"
+                      className="text-xs font-semibold text-muted-foreground"
+                    >
+                      Email Address
+                    </Label>
                     <Input
                       id="email"
                       type="email"
                       value={user?.email || ""}
                       disabled
-                      className="bg-muted text-muted-foreground border-border cursor-not-allowed text-xs"
+                      className="cursor-not-allowed border-border bg-muted text-xs text-muted-foreground"
                     />
                     <p className="text-[10px] text-muted-foreground">
-                      Email address cannot be changed. Contact administrator if needed.
+                      Email address cannot be changed. Contact administrator if
+                      needed.
                     </p>
                   </div>
 
                   {/* Display Name */}
                   <div className="space-y-2">
-                    <Label htmlFor="display-name" className="text-xs font-semibold text-muted-foreground">Display Name</Label>
+                    <Label
+                      htmlFor="display-name"
+                      className="text-xs font-semibold text-muted-foreground"
+                    >
+                      Display Name
+                    </Label>
                     <Input
                       id="display-name"
                       type="text"
@@ -314,12 +345,23 @@ const Settings = () => {
                     />
                   </div>
                 </CardContent>
-                <CardFooter className="bg-muted/30 border-t border-border p-4 mt-6 flex justify-end">
-                  <Button type="submit" disabled={isUpdatingProfile || userName === user?.name} size="sm" className="font-semibold">
+                <CardFooter className="mt-6 flex justify-end border-t border-border bg-muted/30 p-4">
+                  <Button
+                    type="submit"
+                    disabled={isUpdatingProfile || userName === user?.name}
+                    size="sm"
+                    className="font-semibold"
+                  >
                     {isUpdatingProfile ? (
-                      <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
+                      <HugeiconsIcon
+                        icon={Loading03Icon}
+                        className="size-4 animate-spin"
+                      />
                     ) : (
-                      <HugeiconsIcon icon={TickDouble01Icon} className="size-4" />
+                      <HugeiconsIcon
+                        icon={TickDouble01Icon}
+                        className="size-4"
+                      />
                     )}
                     Save Changes
                   </Button>
@@ -328,9 +370,11 @@ const Settings = () => {
             </Card>
 
             {/* Security & Password Card */}
-            <Card className="border-border bg-card shadow-sm h-fit">
+            <Card className="h-fit border-border bg-card shadow-sm">
               <CardHeader>
-                <CardTitle className="text-sm font-semibold text-foreground">Security & Password</CardTitle>
+                <CardTitle className="text-sm font-semibold text-foreground">
+                  Security & Password
+                </CardTitle>
                 <CardDescription className="text-xs">
                   Change your password to keep your account secure.
                 </CardDescription>
@@ -339,7 +383,12 @@ const Settings = () => {
                 <CardContent className="space-y-4">
                   {/* Current Password */}
                   <div className="space-y-2">
-                    <Label htmlFor="current-pw" className="text-xs font-semibold text-muted-foreground">Current Password</Label>
+                    <Label
+                      htmlFor="current-pw"
+                      className="text-xs font-semibold text-muted-foreground"
+                    >
+                      Current Password
+                    </Label>
                     <Input
                       id="current-pw"
                       type="password"
@@ -354,7 +403,12 @@ const Settings = () => {
 
                   {/* New Password */}
                   <div className="space-y-2">
-                    <Label htmlFor="new-pw" className="text-xs font-semibold text-muted-foreground">New Password</Label>
+                    <Label
+                      htmlFor="new-pw"
+                      className="text-xs font-semibold text-muted-foreground"
+                    >
+                      New Password
+                    </Label>
                     <Input
                       id="new-pw"
                       type="password"
@@ -369,7 +423,12 @@ const Settings = () => {
 
                   {/* Confirm New Password */}
                   <div className="space-y-2">
-                    <Label htmlFor="confirm-pw" className="text-xs font-semibold text-muted-foreground">Confirm New Password</Label>
+                    <Label
+                      htmlFor="confirm-pw"
+                      className="text-xs font-semibold text-muted-foreground"
+                    >
+                      Confirm New Password
+                    </Label>
                     <Input
                       id="confirm-pw"
                       type="password"
@@ -382,19 +441,29 @@ const Settings = () => {
                     />
                   </div>
                 </CardContent>
-                <CardFooter className="bg-muted/30 border-t border-border p-4 mt-6 flex justify-end">
-                  <Button type="submit" disabled={isChangingPassword} size="sm" className="font-semibold">
+                <CardFooter className="mt-6 flex justify-end border-t border-border bg-muted/30 p-4">
+                  <Button
+                    type="submit"
+                    disabled={isChangingPassword}
+                    size="sm"
+                    className="font-semibold"
+                  >
                     {isChangingPassword ? (
-                      <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
+                      <HugeiconsIcon
+                        icon={Loading03Icon}
+                        className="size-4 animate-spin"
+                      />
                     ) : (
-                      <HugeiconsIcon icon={SecurityPasswordIcon} className="size-4" />
+                      <HugeiconsIcon
+                        icon={SecurityPasswordIcon}
+                        className="size-4"
+                      />
                     )}
                     Change Password
                   </Button>
                 </CardFooter>
               </form>
             </Card>
-
           </div>
         </div>
 
@@ -402,44 +471,59 @@ const Settings = () => {
         {/* SECTION 2: Organization Settings */}
         {/* ============================================================== */}
         <div className="space-y-4 pt-4">
-          <h2 className="text-lg font-semibold text-foreground border-b border-border pb-1.5 flex items-center gap-2">
-            <HugeiconsIcon icon={Building01Icon} className="size-5 text-primary" />
+          <h2 className="flex items-center gap-2 border-b border-border pb-1.5 text-lg font-semibold text-foreground">
+            <HugeiconsIcon
+              icon={Building01Icon}
+              className="size-5 text-primary"
+            />
             Organization Settings
           </h2>
-          
+
           <div className="grid gap-6 md:grid-cols-3">
-            
             {/* Organization profile form & keys card (2 cols) */}
-            <div className="md:col-span-2 space-y-6">
-              
+            <div className="space-y-6 md:col-span-2">
               {/* Org details Card */}
-              <Card className="border-border bg-card shadow-sm h-fit">
+              <Card className="h-fit border-border bg-card shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-sm font-semibold text-foreground">Organization Identity</CardTitle>
+                  <CardTitle className="text-sm font-semibold text-foreground">
+                    Organization Identity
+                  </CardTitle>
                   <CardDescription className="text-xs">
-                    Configure public organization details seen on verification pages and generated credentials.
+                    Configure public organization details seen on verification
+                    pages and generated credentials.
                   </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleUpdateOrganization}>
                   <CardContent className="space-y-4">
                     {/* Slug (Read-only) */}
                     <div className="space-y-2">
-                      <Label htmlFor="slug" className="text-xs font-semibold text-muted-foreground">Workspace Slug (URL-friendly)</Label>
+                      <Label
+                        htmlFor="slug"
+                        className="text-xs font-semibold text-muted-foreground"
+                      >
+                        Workspace Slug (URL-friendly)
+                      </Label>
                       <Input
                         id="slug"
                         type="text"
                         value={activeOrg?.slug || ""}
                         disabled
-                        className="bg-muted text-muted-foreground border-border cursor-not-allowed text-xs font-mono"
+                        className="cursor-not-allowed border-border bg-muted font-mono text-xs text-muted-foreground"
                       />
                       <p className="text-[10px] text-muted-foreground">
-                        Slugs are unique identifiers and cannot be altered after creation.
+                        Slugs are unique identifiers and cannot be altered after
+                        creation.
                       </p>
                     </div>
 
                     {/* Organization Name */}
                     <div className="space-y-2">
-                      <Label htmlFor="org-name" className="text-xs font-semibold text-muted-foreground">Organization Name</Label>
+                      <Label
+                        htmlFor="org-name"
+                        className="text-xs font-semibold text-muted-foreground"
+                      >
+                        Organization Name
+                      </Label>
                       <Input
                         id="org-name"
                         type="text"
@@ -454,7 +538,12 @@ const Settings = () => {
 
                     {/* Logo URL */}
                     <div className="space-y-2">
-                      <Label htmlFor="logo-url" className="text-xs font-semibold text-muted-foreground">Logo URL Image Path</Label>
+                      <Label
+                        htmlFor="logo-url"
+                        className="text-xs font-semibold text-muted-foreground"
+                      >
+                        Logo URL Image Path
+                      </Label>
                       <Input
                         id="logo-url"
                         type="url"
@@ -462,34 +551,47 @@ const Settings = () => {
                         onChange={(e) => setOrgLogo(e.target.value)}
                         disabled={isUpdatingOrg || !isOwnerOrAdmin}
                         placeholder="https://example.com/logo.png"
-                        className="text-xs font-mono"
+                        className="font-mono text-xs"
                       />
                       <p className="text-[10px] text-muted-foreground">
-                        Input a hosted URL path for your official organization logo image.
+                        Input a hosted URL path for your official organization
+                        logo image.
                       </p>
                     </div>
 
                     {/* Organization Type (Read-only) */}
                     <div className="space-y-2">
-                      <Label className="text-xs font-semibold text-muted-foreground block">Workspace Institution Type</Label>
-                      <span className="inline-flex items-center rounded-md bg-muted border border-border px-3 py-1.5 font-medium text-xs text-foreground capitalize">
+                      <Label className="block text-xs font-semibold text-muted-foreground">
+                        Workspace Institution Type
+                      </Label>
+                      <span className="inline-flex items-center rounded-md border border-border bg-muted px-3 py-1.5 text-xs font-medium text-foreground capitalize">
                         {getOrgTypeLabel()}
                       </span>
                     </div>
                   </CardContent>
-                  
+
                   {isOwnerOrAdmin && (
-                    <CardFooter className="bg-muted/30 border-t border-border mt-6 p-4 flex justify-end">
-                      <Button 
-                        type="submit" 
-                        disabled={isUpdatingOrg || (orgName === activeOrg?.name && orgLogo === activeOrg?.logo)} 
-                        size="sm" 
+                    <CardFooter className="mt-6 flex justify-end border-t border-border bg-muted/30 p-4">
+                      <Button
+                        type="submit"
+                        disabled={
+                          isUpdatingOrg ||
+                          (orgName === activeOrg?.name &&
+                            orgLogo === activeOrg?.logo)
+                        }
+                        size="sm"
                         className="font-semibold"
                       >
                         {isUpdatingOrg ? (
-                          <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
+                          <HugeiconsIcon
+                            icon={Loading03Icon}
+                            className="size-4 animate-spin"
+                          />
                         ) : (
-                          <HugeiconsIcon icon={TickDouble01Icon} className="size-4" />
+                          <HugeiconsIcon
+                            icon={TickDouble01Icon}
+                            className="size-4"
+                          />
                         )}
                         Save Organization Details
                       </Button>
@@ -497,115 +599,109 @@ const Settings = () => {
                   )}
                 </form>
               </Card>
-
-              {/* Cryptographic Public Verification Key Card */}
-              <Card className="border-border bg-card shadow-sm h-fit">
-                <CardHeader>
-                  <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    <HugeiconsIcon icon={Key01Icon} className="size-5 text-primary" />
-                    Cryptographic Public Key
-                  </CardTitle>
-                  <CardDescription className="text-xs">
-                    This active 2048-bit RSA public key verifies the signatures on your organization's credentials.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {activeOrg?.publicKey ? (
-                    <div className="space-y-3">
-                      <pre className="bg-muted p-4 rounded-md border border-border font-mono text-[9px] text-foreground overflow-x-auto max-h-36 whitespace-pre-wrap select-all">
-                        {activeOrg.publicKey}
-                      </pre>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-muted-foreground italic">
-                      No public key has been generated for this organization.
-                    </p>
-                  )}
-                </CardContent>
-                {activeOrg?.publicKey && (
-                  <CardFooter className="bg-muted/30 border-t border-border mt-6 p-4 flex justify-end">
-                    <Button variant="outline" size="sm" onClick={handleCopyKey} className="font-semibold">
-                      Copy Public Key
-                    </Button>
-                  </CardFooter>
-                )}
-              </Card>
-
             </div>
 
             {/* Sidebar status / access details card (1 col) */}
             <div className="space-y-6">
-              <Card className="border-border bg-card shadow-sm h-full">
+              <Card className="h-full border-border bg-card shadow-sm">
                 <CardHeader className="border-b border-border">
                   <CardTitle className="text-sm font-semibold text-foreground">
                     Workspace Membership
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="py-6 space-y-5 text-xs text-muted-foreground">
+                <CardContent className="space-y-5 py-6 text-xs text-muted-foreground">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-foreground">Current Active Member</span>
-                    <span className="text-foreground font-medium truncate max-w-[120px]">
+                    <span className="font-semibold text-foreground">
+                      Current Active Member
+                    </span>
+                    <span className="max-w-[120px] truncate font-medium text-foreground">
                       {user?.name}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-foreground">Organization Role</span>
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold border ${getRoleBadgeColor(activeMember?.role || "")}`}>
+                    <span className="font-semibold text-foreground">
+                      Organization Role
+                    </span>
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${getRoleBadgeColor(activeMember?.role || "")}`}
+                    >
                       {activeMember?.role?.toUpperCase() || "MEMBER"}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-foreground">Date Joined Workspace</span>
+                    <span className="font-semibold text-foreground">
+                      Date Joined Workspace
+                    </span>
                     <span>
-                      {activeMember?.createdAt ? new Date(activeMember.createdAt).toLocaleDateString() : "N/A"}
+                      {activeMember?.createdAt
+                        ? new Date(activeMember.createdAt).toLocaleDateString()
+                        : "N/A"}
                     </span>
                   </div>
 
-                  <div className="border-t border-border pt-4 text-xxs text-muted-foreground/80 leading-relaxed">
-                    <p className="font-semibold text-foreground mb-1.5">Permissions Overview:</p>
-                    <ul className="list-disc pl-3.5 space-y-1">
-                      <li>Owners and Admins can configure keys and update profile details.</li>
-                      <li>Signers can run signing routines but cannot change settings.</li>
-                      <li>Viewers can view issued documents and verification statistics.</li>
+                  <div className="text-xxs border-t border-border pt-4 leading-relaxed text-muted-foreground/80">
+                    <p className="mb-1.5 font-semibold text-foreground">
+                      Permissions Overview:
+                    </p>
+                    <ul className="list-disc space-y-1 pl-3.5">
+                      <li>
+                        Owners and Admins can configure keys and update profile
+                        details.
+                      </li>
+                      <li>
+                        Signers can run signing routines but cannot change
+                        settings.
+                      </li>
+                      <li>
+                        Viewers can view issued documents and verification
+                        statistics.
+                      </li>
                     </ul>
                   </div>
                 </CardContent>
               </Card>
             </div>
-
           </div>
         </div>
 
         {/* ============================================================== */}
         {/* SECTION 3: Danger Zone */}
         {/* ============================================================== */}
-        <div className="space-y-4 pt-6 border-t border-destructive/20">
-          <h2 className="text-lg font-semibold text-destructive flex items-center gap-2">
+        <div className="space-y-4 border-t border-destructive/20 pt-6">
+          <h2 className="flex items-center gap-2 text-lg font-semibold text-destructive">
             <HugeiconsIcon icon={Alert02Icon} className="size-5" />
             Danger Zone
           </h2>
-          
+
           <div className="grid gap-6 md:grid-cols-2">
-            
             {/* Delete Organization Card */}
-            <Card className="border-destructive/20  shadow-sm h-fit">
+            <Card className="h-fit border-destructive/20 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-sm font-semibold text-destructive">Delete Organization</CardTitle>
+                <CardTitle className="text-sm font-semibold text-destructive">
+                  Delete Organization
+                </CardTitle>
                 <CardDescription className="text-xs text-destructive/80">
-                  Permanently delete your organization, revoke all credentials, and remove all member data.
+                  Permanently delete your organization, revoke all credentials,
+                  and remove all member data.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="text-xs text-destructive/70 min-h-[48px]">
+              <CardContent className="min-h-[48px] text-xs text-destructive/70">
                 {activeMember?.role !== "owner" ? (
-                  <p className="text-amber-500 font-semibold">Only the organization owner can delete the organization workspace.</p>
+                  <p className="font-semibold text-amber-500">
+                    Only the organization owner can delete the organization
+                    workspace.
+                  </p>
                 ) : (
-                  <p>Warning: This action is irreversible. All issued credentials will fail verification.</p>
+                  <p>
+                    Warning: This action is irreversible. All issued credentials
+                    will fail verification.
+                  </p>
                 )}
               </CardContent>
-              <CardFooter className="bg-destructive/10 border-t border-destructive/20 p-4 flex justify-end">
-                <Button 
+              <CardFooter className="flex justify-end border-t border-destructive/20 bg-destructive/10 p-4">
+                <Button
                   onClick={handleDeleteOrganization}
                   disabled={activeMember?.role !== "owner" || isDeletingOrg}
                   variant="destructive"
@@ -613,7 +709,10 @@ const Settings = () => {
                   className="font-semibold"
                 >
                   {isDeletingOrg ? (
-                    <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
+                    <HugeiconsIcon
+                      icon={Loading03Icon}
+                      className="size-4 animate-spin"
+                    />
                   ) : (
                     <HugeiconsIcon icon={Delete02Icon} className="size-4" />
                   )}
@@ -623,19 +722,24 @@ const Settings = () => {
             </Card>
 
             {/* Delete Account Card */}
-            <Card className="border-destructive/20  shadow-sm h-fit">
-
+            <Card className="h-fit border-destructive/20 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-sm font-semibold text-destructive">Delete Personal Account</CardTitle>
+                <CardTitle className="text-sm font-semibold text-destructive">
+                  Delete Personal Account
+                </CardTitle>
                 <CardDescription className="text-xs text-destructive/80">
-                  Permanently delete your user account, personal data, and remove your dashboard access.
+                  Permanently delete your user account, personal data, and
+                  remove your dashboard access.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="text-xs text-destructive/70 min-h-[48px]">
-                <p>Warning: This action is irreversible. You will be signed out and your account credentials will be removed.</p>
+              <CardContent className="min-h-[48px] text-xs text-destructive/70">
+                <p>
+                  Warning: This action is irreversible. You will be signed out
+                  and your account credentials will be removed.
+                </p>
               </CardContent>
-              <CardFooter className="bg-destructive/10 border-t border-destructive/20 p-4 flex justify-end">
-                <Button 
+              <CardFooter className="flex justify-end border-t border-destructive/20 bg-destructive/10 p-4">
+                <Button
                   onClick={handleDeleteAccount}
                   disabled={isDeletingAccount}
                   variant="destructive"
@@ -643,7 +747,10 @@ const Settings = () => {
                   className="font-semibold"
                 >
                   {isDeletingAccount ? (
-                    <HugeiconsIcon icon={Loading03Icon} className="size-4 animate-spin" />
+                    <HugeiconsIcon
+                      icon={Loading03Icon}
+                      className="size-4 animate-spin"
+                    />
                   ) : (
                     <HugeiconsIcon icon={Delete02Icon} className="size-4" />
                   )}
@@ -651,24 +758,30 @@ const Settings = () => {
                 </Button>
               </CardFooter>
             </Card>
-
           </div>
         </div>
 
         {/* Delete Organization Confirmation Modal */}
         {deleteOrgConfirmOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-card border border-border rounded-xl shadow-lg w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-              <div className="p-6 space-y-4">
-                <h3 className="font-semibold text-foreground text-lg">
+          <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-background/80 p-4 backdrop-blur-sm duration-200 fade-in">
+            <div className="w-full max-w-md animate-in overflow-hidden rounded-xl border border-border bg-card shadow-lg duration-200 zoom-in-95">
+              <div className="space-y-4 p-6">
+                <h3 className="text-lg font-semibold text-foreground">
                   Delete Organization?
                 </h3>
-                <p className="text-sm text-muted-foreground leading-normal">
-                  Are you sure you want to permanently delete <span className="font-semibold text-foreground">"{activeOrg?.name}"</span>? 
-                  This action is <span className="font-semibold text-destructive">IRREVERSIBLE</span>. 
-                  It will delete all memberships, remove all issued document ledgers, and invalidate all digital signature verifications.
+                <p className="text-sm leading-normal text-muted-foreground">
+                  Are you sure you want to permanently delete{" "}
+                  <span className="font-semibold text-foreground">
+                    "{activeOrg?.name}"
+                  </span>
+                  ? This action is{" "}
+                  <span className="font-semibold text-destructive">
+                    IRREVERSIBLE
+                  </span>
+                  . It will delete all memberships, remove all issued document
+                  ledgers, and invalidate all digital signature verifications.
                 </p>
-                
+
                 <div className="flex justify-end gap-3 pt-2">
                   <Button
                     variant="outline"
@@ -693,18 +806,22 @@ const Settings = () => {
 
         {/* Delete Account Confirmation Modal */}
         {deleteAccountConfirmOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-card border border-border rounded-xl shadow-lg w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-              <div className="p-6 space-y-4">
-                <h3 className="font-semibold text-foreground text-lg">
+          <div className="fixed inset-0 z-50 flex animate-in items-center justify-center bg-background/80 p-4 backdrop-blur-sm duration-200 fade-in">
+            <div className="w-full max-w-md animate-in overflow-hidden rounded-xl border border-border bg-card shadow-lg duration-200 zoom-in-95">
+              <div className="space-y-4 p-6">
+                <h3 className="text-lg font-semibold text-foreground">
                   Delete Personal Account?
                 </h3>
-                <p className="text-sm text-muted-foreground leading-normal">
-                  Are you sure you want to permanently delete your personal account? 
-                  This action is <span className="font-semibold text-destructive">IRREVERSIBLE</span>. 
-                  You will be permanently signed out and your account credentials will be removed.
+                <p className="text-sm leading-normal text-muted-foreground">
+                  Are you sure you want to permanently delete your personal
+                  account? This action is{" "}
+                  <span className="font-semibold text-destructive">
+                    IRREVERSIBLE
+                  </span>
+                  . You will be permanently signed out and your account
+                  credentials will be removed.
                 </p>
-                
+
                 <div className="flex justify-end gap-3 pt-2">
                   <Button
                     variant="outline"

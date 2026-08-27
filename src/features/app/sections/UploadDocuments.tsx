@@ -434,7 +434,11 @@ const UploadDocuments = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form
+                noValidate
+                onSubmit={handleSubmit}
+                className="space-y-6"
+              >
                 <div className="space-y-2">
                   <Label htmlFor="title">Document Title</Label>
                   <Input
@@ -521,6 +525,7 @@ const UploadDocuments = () => {
                         type="button"
                         variant="ghost"
                         size="icon"
+                        aria-label="Remove selected file"
                         onClick={handleRemoveFile}
                         className="shrink-0 text-muted-foreground hover:text-destructive"
                         disabled={isProcessing}

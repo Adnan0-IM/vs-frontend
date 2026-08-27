@@ -97,8 +97,7 @@ const ErrorElement = () => {
     </div>
   )
 }
-const requireAuth = async ({ request }: { request: Request }) => {
-  const { data: session, error } = await authClient.getSession()
+export const requireAuth = async ({ request }: { request: Request }) => {  const { data: session, error } = await authClient.getSession()
 
   if (error || !session?.session?.token) {
     const url = new URL(request.url)
