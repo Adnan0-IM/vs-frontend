@@ -18,7 +18,7 @@ const Home = () => {
             <span>VeriDoc</span>{" "}
           </div>{" "}
           <nav className="flex items-center gap-4">
-            <Link to={"/"}> Docs</Link>
+            <Link to={"/verification"}> Verify PDF</Link>
             <Link to={""}></Link>
             <Link to={""}>
               <HugeiconsIcon icon={Github} size={22} />
