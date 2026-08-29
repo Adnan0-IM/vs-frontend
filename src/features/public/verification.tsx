@@ -251,7 +251,7 @@ const Verification = () => {
 
           {/* Results Render */}
           {!loading && !uploadingFile && result && (
-            <Card className="animate-in overflow-hidden border-border shadow-xl duration-300 fade-in">
+            <Card className="animate-in overflow-hidden border-border shadow-xl py-0 duration-300 fade-in">
               {/* Header result banner */}
               {result.verified && result.documentStatus === "ACTIVE" && (
                 <div className="flex items-center gap-3 border-b border-emerald-500/20 bg-emerald-500/10 px-6 py-5">
