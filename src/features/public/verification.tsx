@@ -195,14 +195,17 @@ const Verification = () => {
 
       <header>
         <div className="flex items-center justify-between text-muted-foreground">
+          <Link to={"/"}> 
           <div className="flex items-center gap-2 font-bold">
             <div className="flex aspect-square size-6 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
               <HugeiconsIcon size={16} icon={DocumentValidationIcon} />{" "}
             </div>
             <span>VeriDoc</span>{" "}
           </div>{" "}
+
+          </Link>
           <nav className="flex items-center gap-4">
-            <Link to={"/verification"}> Verify PDF</Link>
+            <Link className="hover:underline hover:text-primary" to={"/verification"}> Verify PDF</Link>
             <Link to={""}></Link>
             <Link to={""}>
               <HugeiconsIcon icon={Github} size={22} />
