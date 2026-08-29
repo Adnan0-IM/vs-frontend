@@ -3,6 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import * as z from "zod"
 import { useNavigate } from "react-router"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Alert02Icon, RefreshIcon } from "@hugeicons/core-free-icons"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -23,10 +25,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { useCreateOrganization } from "./hooks/use-create-organization"
 import { orgSetupSchema } from "./schemas/org-setup-schema"
+import { generateKeys } from "./api/organization"
 
 const OrgSetup = () => {
   const [submitMessage, setSubmitMessage] = useState("")
   const [submitError, setSubmitError] = useState("")
+  const [keysGenerated, setKeysGenerated] = useState(true)
+  const [keysMessage, setKeysMessage] = useState("")
   const navigate = useNavigate()
   const createOrganizationMutation = useCreateOrganization()
 
@@ -42,15 +47,46 @@ const OrgSetup = () => {
   const onSubmit = async (values: z.infer<typeof orgSetupSchema>) => {
     setSubmitMessage("")
     setSubmitError("")
+    setKeysGenerated(true)
+    setKeysMessage("")
 
-    const createdOrganization = await createOrganizationMutation.mutateAsync(
-      values
-    )
+    try {
+      const createdOrganization = await createOrganizationMutation.mutateAsync(
+        values
+      )
 
-    setSubmitMessage("Organization created successfully.")
+      if (createdOrganization?.keys?.success === false) {
+        setKeysGenerated(false)
+        setKeysMessage(createdOrganization.keys.message)
+        setSubmitMessage("Organization created, but key generation failed. You can retry below.")
+      } else {
+        setSubmitMessage("Organization created successfully.")
+      }
 
-    if (createdOrganization?.id) {
-      navigate(`/dashboard`)
+      if (createdOrganization?.id) {
+        navigate(`/dashboard`)
+      }
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Unable to create the organization right now."
+      )
+    }
+  }
+
+  const handleRetryKeys = async (orgId: string) => {
+    setKeysMessage("Generating keys...")
+    try {
+      const response = await generateKeys(orgId)
+      if (response.success) {
+        setKeysGenerated(true)
+        setKeysMessage("Keys generated successfully!")
+      } else {
+        setKeysMessage(response.message)
+      }
+    } catch (error) {
+      setKeysMessage(error instanceof Error ? error.message : "Failed to generate keys")
     }
   }
 
@@ -212,6 +248,23 @@ const OrgSetup = () => {
               <FieldDescription className="text-center text-destructive">
                 {submitError}
               </FieldDescription>
+            )}
+            {!keysGenerated && keysMessage && (
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <div className="flex items-center gap-2 text-destructive">
+                  <HugeiconsIcon icon={Alert02Icon} className="size-4" />
+                  <span className="text-sm">{keysMessage}</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleRetryKeys(createOrganizationMutation.data?.id || "")}
+                  disabled={createOrganizationMutation.isPending || !createOrganizationMutation.data?.id}
+                >
+                  <HugeiconsIcon icon={RefreshIcon} className="size-4 mr-2" />
+                  Retry Key Generation
+                </Button>
+              </div>
             )}
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
               <Button

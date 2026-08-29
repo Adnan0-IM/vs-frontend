@@ -49,15 +49,32 @@ export async function createOrganization(
   await authClient.organization.setActive({ organizationId: data.id })
 
   // 3. Call backend to generate keys for this organization
-  const keysResponse = await apiClient.post<{ success: boolean; message: string }>(
-    "/organization/generate-keys",
-    { orgId: data.id }
-  )
+  let keys: { success: boolean; message: string } | undefined
+  try {
+    const keysResponse = await apiClient.post<{ success: boolean; message: string }>(
+      "/organization/generate-keys",
+      { orgId: data.id }
+    )
+    keys = keysResponse.data
+  } catch (keysError) {
+    keys = {
+      success: false,
+      message: keysError instanceof Error ? keysError.message : "Failed to generate keys",
+    }
+  }
 
   return {
     ...data,
-    keys: keysResponse.data,
+    keys,
   }
+}
+
+export async function generateKeys(orgId: string): Promise<{ success: boolean; message: string }> {
+  const response = await apiClient.post<{ success: boolean; message: string }>(
+    "/organization/generate-keys",
+    { orgId }
+  )
+  return response.data
 }
 
 export type DashboardStatsResponse = {
