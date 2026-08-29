@@ -3,7 +3,7 @@ import { organizationClient } from "better-auth/client/plugins"
 import { ac, orgMember, orgAdmin, orgOwner } from "./permissions.ts"
 
 export const authClient = createAuthClient({
-  baseURL: import.meta.env.VITE_AUTH_ORIGIN ?? window.location.origin,
+  baseURL: import.meta.env.VITE_AUTH_ORIGIN ?? "https://api.vs.adnanilyas.dev",
   basePath: "/api/auth",
   plugins: [
     organizationClient({
