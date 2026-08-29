@@ -56,7 +56,7 @@ const OrgSetup = () => {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 py-6 md:py-10">
-      <div className="space-y-2">
+      <div className="space-y-2 px-4 md:px-0">
         <p className="text-sm font-medium text-muted-foreground">
           Organization setup
         </p>
