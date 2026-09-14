@@ -27,11 +27,19 @@ export interface SignedDocument {
   }
 }
 
+export type VerificationResult =
+  | "VERIFIED"
+  | "TAMPERED_HASH"
+  | "TAMPERED_SIGNATURE"
+  | "NO_MATCHING_RECORD"
+  | "STORAGE_ERROR"
+  | "NOT_FOUND";
+
 export interface VerificationLog {
   id: string
   documentId: string
   verificationType: "QR_SCAN" | "FILE_UPLOAD"
-  verificationResult: "VERIFIED" | "TAMPERED" | "NOT_FOUND"
+  verificationResult: VerificationResult
   verifiedByUserId?: string | null
   ipAddress?: string | null
   userAgent?: string | null
@@ -46,7 +54,7 @@ export interface VerificationLog {
 export interface VerificationResponse {
   success: boolean
   verified: boolean
-  result: "VERIFIED" | "TAMPERED" | "NOT_FOUND"
+  result: VerificationResult
   documentStatus?: DocumentStatus
   message?: string
   document?: {
