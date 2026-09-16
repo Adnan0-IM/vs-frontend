@@ -171,6 +171,13 @@ const Verification = () => {
         toast.warning("Warning: Valid match, but document has been revoked.", {
           id: toastId,
         })
+      } else if (res.result === "MODIFIED_VERSION") {
+        toast.warning(
+          "Modified version detected! This file is similar to a registered document but has been altered.",
+          {
+            id: toastId,
+          }
+        )
       } else if (res.result === "TAMPERED_SIGNATURE") {
         toast.error("Invalid signature! Document may be forged or corrupted.", {
           id: toastId,
@@ -331,7 +338,8 @@ const Verification = () => {
                       TAMPERED / INVALID
                     </h2>
                     <p className="text-xs text-red-400/80">
-                      Document content was modified after signing. Hash mismatch detected.
+                      Document content was modified after signing. Hash mismatch
+                      detected.
                     </p>
                   </div>
                 </div>
@@ -374,7 +382,7 @@ const Verification = () => {
                   </div>
                 </div>
               )}
-{result.result === "NO_MATCHING_RECORD" && (
+              {result.result === "NO_MATCHING_RECORD" && (
                 <div className="flex items-center gap-3 border-b border-amber-500/20 bg-amber-500/10 px-6 py-5">
                   <HugeiconsIcon
                     icon={Alert02Icon}
@@ -496,32 +504,24 @@ const Verification = () => {
                 {/* File: No matching record */}
                 {verificationMethod === "file" &&
                   result.result === "NO_MATCHING_RECORD" && (
-                        <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
-                      <HugeiconsIcon
-                        icon={InformationCircleIcon}
-                        className="mt-0.5 size-5 shrink-0 text-red-400"
-                      />
-                      <div>
-                        The document hash does not match the signed version.
-                        This indicates the PDF content was modified after
-                        signing. Changes to text, images, or metadata will cause
-                        this mismatch. Do not trust this document.
-                      </div>
-                    </div>
-                  )}
-                {verificationMethod === "file" &&
-                  result.result === "NO_MATCHING_RECORD" && (
                     <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
                       <HugeiconsIcon
                         icon={InformationCircleIcon}
                         className="mt-0.5 size-5 shrink-0 text-amber-400"
                       />
                       <div>
-                        <strong>File Not Found in Registry</strong><br />
-                        This file's content does not match any registered document. This means either:<br />
-                        • The document was never registered in our system, OR<br />
-                        • The file was modified after signing (even a single character change)<br />
-                        Please verify you uploaded the original, unmodified signed PDF.
+                        <strong>File Not Found in Registry</strong>
+                        <br />
+                        This file's content does not match any registered
+                        document. This means either:
+                        <br />
+                        • The document was never registered in our system, OR
+                        <br />
+                        • The file was modified after signing (even a single
+                        character change)
+                        <br />
+                        Please verify you uploaded the original, unmodified
+                        signed PDF.
                       </div>
                     </div>
                   )}
