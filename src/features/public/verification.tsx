@@ -331,8 +331,7 @@ const Verification = () => {
                       TAMPERED / INVALID
                     </h2>
                     <p className="text-xs text-red-400/80">
-                      Hash mismatch. The document content was modified after
-                      signing.
+                      Document content was modified after signing. Hash mismatch detected.
                     </p>
                   </div>
                 </div>
@@ -375,25 +374,7 @@ const Verification = () => {
                   </div>
                 </div>
               )}
-              {result.result === "NO_MATCHING_RECORD" && (
-                 <div className="flex items-center gap-3 border-b border-red-500/20 bg-red-500/10 px-6 py-5">
-                  <HugeiconsIcon
-                    icon={MultiplicationSignCircleIcon}
-                    className="size-10 shrink-0 text-red-400"
-                    strokeWidth={2}
-                  />
-                  <div>
-                    <h2 className="text-lg font-bold text-red-400">
-                      TAMPERED / INVALID
-                    </h2>
-                    <p className="text-xs text-red-400/80">
-                      Invalid digital signature. Document may be forged or
-                      corrupted.
-                    </p>
-                  </div>
-                </div>
-              )}
-              {result.result === "NO_MATCHING_RECORD" && (
+{result.result === "NO_MATCHING_RECORD" && (
                 <div className="flex items-center gap-3 border-b border-amber-500/20 bg-amber-500/10 px-6 py-5">
                   <HugeiconsIcon
                     icon={Alert02Icon}
@@ -402,11 +383,11 @@ const Verification = () => {
                   />
                   <div>
                     <h2 className="text-lg font-bold text-amber-400">
-                      FILE NOT IN SYSTEM
+                      NOT REGISTERED
                     </h2>
                     <p className="text-xs text-amber-400/80">
                       No document with this exact content exists in our ledger.
-                      File may be modified or never signed.
+                      The file was either never registered or has been modified.
                     </p>
                   </div>
                 </div>
@@ -536,10 +517,11 @@ const Verification = () => {
                         className="mt-0.5 size-5 shrink-0 text-amber-400"
                       />
                       <div>
-                        No document with this exact content exists in our
-                        system. The file may have been modified after signing,
-                        or it was never issued through our platform. Verify you
-                        uploaded the original signed PDF.
+                        <strong>File Not Found in Registry</strong><br />
+                        This file's content does not match any registered document. This means either:<br />
+                        • The document was never registered in our system, OR<br />
+                        • The file was modified after signing (even a single character change)<br />
+                        Please verify you uploaded the original, unmodified signed PDF.
                       </div>
                     </div>
                   )}
