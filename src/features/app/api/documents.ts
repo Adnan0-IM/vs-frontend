@@ -33,7 +33,8 @@ export type VerificationResult =
   | "TAMPERED_SIGNATURE"
   | "NO_MATCHING_RECORD"
   | "STORAGE_ERROR"
-  | "NOT_FOUND";
+  | "NOT_FOUND"
+  | "MODIFIED_VERSION";
 
 export interface VerificationLog {
   id: string

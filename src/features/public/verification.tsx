@@ -382,6 +382,25 @@ const Verification = () => {
                   </div>
                 </div>
               )}
+              {result.result === "MODIFIED_VERSION" && (
+                <div className="flex items-center gap-3 border-b border-blue-500/20 bg-blue-500/10 px-6 py-5">
+                  <HugeiconsIcon
+                    icon={Alert02Icon}
+                    className="size-10 shrink-0 text-blue-400"
+                    strokeWidth={2}
+                  />
+                  <div>
+                    <h2 className="text-lg font-bold text-blue-400">
+                      MODIFIED VERSION DETECTED
+                    </h2>
+                    <p className="text-xs text-blue-400/80">
+                      This file is similar to a registered document but has been modified.
+                      The content differs from the original signed version.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {result.result === "NO_MATCHING_RECORD" && (
                 <div className="flex items-center gap-3 border-b border-amber-500/20 bg-amber-500/10 px-6 py-5">
                   <HugeiconsIcon
@@ -522,6 +541,26 @@ const Verification = () => {
                         <br />
                         Please verify you uploaded the original, unmodified
                         signed PDF.
+                      </div>
+                    </div>
+                  )}
+
+                {/* File: Modified version detected */}
+                {verificationMethod === "file" &&
+                  result.result === "MODIFIED_VERSION" && (
+                    <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
+                      <HugeiconsIcon
+                        icon={InformationCircleIcon}
+                        className="mt-0.5 size-5 shrink-0 text-blue-400"
+                      />
+                      <div>
+                        <strong>Modified Version Detected</strong>
+                        <br />
+                        This file is similar to a registered document but has been altered.
+                        The system found a close match using fuzzy hashing (TLSH similarity > 80%).
+                        The document content differs from the original signed version.
+                        <br />
+                        Please contact the issuer for the authentic version.
                       </div>
                     </div>
                   )}
