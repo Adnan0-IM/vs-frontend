@@ -38,7 +38,9 @@ const Verification = () => {
 
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<VerificationResponse | null>(null)
-  const [verificationMethod, setVerificationMethod] = useState<"token" | "file" | null>(null)
+  const [verificationMethod, setVerificationMethod] = useState<
+    "token" | "file" | null
+  >(null)
 
   // File verification upload state
   const [dragActive, setDragActive] = useState(false)
@@ -59,15 +61,20 @@ const Verification = () => {
       } else if (res.documentStatus === "REVOKED") {
         toast.warning("Warning: Document has been revoked.", { id: toastId })
       } else if (res.result === "TAMPERED_HASH") {
-        toast.error("Hash mismatch! Document content was altered after signing.", {
-          id: toastId,
-        })
+        toast.error(
+          "Hash mismatch! Document content was altered after signing.",
+          {
+            id: toastId,
+          }
+        )
       } else if (res.result === "TAMPERED_SIGNATURE") {
         toast.error("Invalid signature! Document may be forged or corrupted.", {
           id: toastId,
         })
       } else if (res.result === "STORAGE_ERROR") {
-        toast.error("Unable to retrieve document from storage.", { id: toastId })
+        toast.error("Unable to retrieve document from storage.", {
+          id: toastId,
+        })
       } else {
         toast.error("Invalid or expired verification token.", { id: toastId })
       }
@@ -169,9 +176,12 @@ const Verification = () => {
           id: toastId,
         })
       } else if (res.result === "NO_MATCHING_RECORD") {
-        toast.error("No matching document found. File may be modified or never signed.", {
-          id: toastId,
-        })
+        toast.error(
+          "No matching document found. File may be modified or never signed.",
+          {
+            id: toastId,
+          }
+        )
       }
     } catch (err: unknown) {
       console.error(err)
@@ -205,17 +215,22 @@ const Verification = () => {
 
       <header>
         <div className="flex items-center justify-between text-muted-foreground">
-          <Link to={"/"}> 
-          <div className="flex items-center gap-2 font-bold">
-            <div className="flex aspect-square size-6 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-              <HugeiconsIcon size={16} icon={DocumentValidationIcon} />{" "}
-            </div>
-            <span>VeriDoc</span>{" "}
-          </div>{" "}
-
+          <Link to={"/"}>
+            <div className="flex items-center gap-2 font-bold">
+              <div className="flex aspect-square size-6 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <HugeiconsIcon size={16} icon={DocumentValidationIcon} />{" "}
+              </div>
+              <span>VeriDoc</span>{" "}
+            </div>{" "}
           </Link>
           <nav className="flex items-center gap-4">
-            <Link className="hover:underline hover:text-primary" to={"/verification"}> Verify PDF</Link>
+            <Link
+              className="hover:text-primary hover:underline"
+              to={"/verification"}
+            >
+              {" "}
+              Verify PDF
+            </Link>
             <Link to={""}></Link>
             <Link to={""}>
               <HugeiconsIcon icon={Github} size={22} />
@@ -264,7 +279,7 @@ const Verification = () => {
 
           {/* Results Render */}
           {!loading && !uploadingFile && result && (
-            <Card className="animate-in overflow-hidden border-border shadow-xl py-0 duration-300 fade-in">
+            <Card className="animate-in overflow-hidden border-border py-0 shadow-xl duration-300 fade-in">
               {/* Header result banner */}
               {result.verified && result.documentStatus === "ACTIVE" && (
                 <div className="flex items-center gap-3 border-b border-emerald-500/20 bg-emerald-500/10 px-6 py-5">
@@ -360,7 +375,24 @@ const Verification = () => {
                   </div>
                 </div>
               )}
-
+              {result.result === "NO_MATCHING_RECORD" && (
+                 <div className="flex items-center gap-3 border-b border-red-500/20 bg-red-500/10 px-6 py-5">
+                  <HugeiconsIcon
+                    icon={MultiplicationSignCircleIcon}
+                    className="size-10 shrink-0 text-red-400"
+                    strokeWidth={2}
+                  />
+                  <div>
+                    <h2 className="text-lg font-bold text-red-400">
+                      TAMPERED / INVALID
+                    </h2>
+                    <p className="text-xs text-red-400/80">
+                      Invalid digital signature. Document may be forged or
+                      corrupted.
+                    </p>
+                  </div>
+                </div>
+              )}
               {result.result === "NO_MATCHING_RECORD" && (
                 <div className="flex items-center gap-3 border-b border-amber-500/20 bg-amber-500/10 px-6 py-5">
                   <HugeiconsIcon
@@ -380,25 +412,26 @@ const Verification = () => {
                 </div>
               )}
 
-              {verificationMethod === "token" && result.result === "NOT_FOUND" && (
-                <div className="flex items-center gap-3 border-b border-amber-500/20 bg-amber-500/10 px-6 py-5">
-                  <HugeiconsIcon
-                    icon={Alert02Icon}
-                    className="size-10 shrink-0 text-amber-400"
-                    strokeWidth={2}
-                  />
-                  <div>
-                    <h2 className="text-lg font-bold text-amber-400">
-                      INVALID QR CODE
-                    </h2>
-                    <p className="text-xs text-amber-400/80">
-                      No document found for this verification token. The QR code
-                      may be invalid, expired, or the document was never issued
-                      through our platform.
-                    </p>
+              {verificationMethod === "token" &&
+                result.result === "NOT_FOUND" && (
+                  <div className="flex items-center gap-3 border-b border-amber-500/20 bg-amber-500/10 px-6 py-5">
+                    <HugeiconsIcon
+                      icon={Alert02Icon}
+                      className="size-10 shrink-0 text-amber-400"
+                      strokeWidth={2}
+                    />
+                    <div>
+                      <h2 className="text-lg font-bold text-amber-400">
+                        INVALID QR CODE
+                      </h2>
+                      <p className="text-xs text-amber-400/80">
+                        No document found for this verification token. The QR
+                        code may be invalid, expired, or the document was never
+                        issued through our platform.
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               <CardContent className="space-y-6 p-6">
                 {/* Document Metadata if available */}
@@ -464,51 +497,69 @@ const Verification = () => {
                 )}
 
                 {/* Token: Invalid QR code */}
-                {verificationMethod === "token" && result.result === "NOT_FOUND" && (
-                  <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
-                    <HugeiconsIcon
-                      icon={InformationCircleIcon}
-                      className="mt-0.5 size-5 shrink-0 text-amber-400"
-                    />
-                    <div>
-                      No document found for this verification token. The QR code
-                      may be invalid, expired, or the document was never issued
-                      through our platform.
+                {verificationMethod === "token" &&
+                  result.result === "NOT_FOUND" && (
+                    <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
+                      <HugeiconsIcon
+                        icon={InformationCircleIcon}
+                        className="mt-0.5 size-5 shrink-0 text-amber-400"
+                      />
+                      <div>
+                        No document found for this verification token. The QR
+                        code may be invalid, expired, or the document was never
+                        issued through our platform.
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* File: No matching record */}
-                {verificationMethod === "file" && result.result === "NO_MATCHING_RECORD" && (
-                  <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
-                    <HugeiconsIcon
-                      icon={InformationCircleIcon}
-                      className="mt-0.5 size-5 shrink-0 text-amber-400"
-                    />
-                    <div>
-                      No document with this exact content exists in our system.
-                      The file may have been modified after signing, or it was
-                      never issued through our platform. Verify you uploaded the
-                      original signed PDF.
+                {verificationMethod === "file" &&
+                  result.result === "NO_MATCHING_RECORD" && (
+                        <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
+                      <HugeiconsIcon
+                        icon={InformationCircleIcon}
+                        className="mt-0.5 size-5 shrink-0 text-red-400"
+                      />
+                      <div>
+                        The document hash does not match the signed version.
+                        This indicates the PDF content was modified after
+                        signing. Changes to text, images, or metadata will cause
+                        this mismatch. Do not trust this document.
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                {verificationMethod === "file" &&
+                  result.result === "NO_MATCHING_RECORD" && (
+                    <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
+                      <HugeiconsIcon
+                        icon={InformationCircleIcon}
+                        className="mt-0.5 size-5 shrink-0 text-amber-400"
+                      />
+                      <div>
+                        No document with this exact content exists in our
+                        system. The file may have been modified after signing,
+                        or it was never issued through our platform. Verify you
+                        uploaded the original signed PDF.
+                      </div>
+                    </div>
+                  )}
 
                 {/* Token: Hash mismatch (tampered) */}
-                {verificationMethod === "token" && result.result === "TAMPERED_HASH" && (
-                  <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
-                    <HugeiconsIcon
-                      icon={InformationCircleIcon}
-                      className="mt-0.5 size-5 shrink-0 text-red-400"
-                    />
-                    <div>
-                      The document hash does not match the signed version. This
-                      indicates the PDF content was modified after signing.
-                      Changes to text, images, or metadata will cause this
-                      mismatch. Do not trust this document.
+                {verificationMethod === "token" &&
+                  result.result === "TAMPERED_HASH" && (
+                    <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
+                      <HugeiconsIcon
+                        icon={InformationCircleIcon}
+                        className="mt-0.5 size-5 shrink-0 text-red-400"
+                      />
+                      <div>
+                        The document hash does not match the signed version.
+                        This indicates the PDF content was modified after
+                        signing. Changes to text, images, or metadata will cause
+                        this mismatch. Do not trust this document.
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Both: Invalid signature */}
                 {result.result === "TAMPERED_SIGNATURE" && (
@@ -526,19 +577,20 @@ const Verification = () => {
                 )}
 
                 {/* Token: Storage error */}
-                {verificationMethod === "token" && result.result === "STORAGE_ERROR" && (
-                  <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
-                    <HugeiconsIcon
-                      icon={InformationCircleIcon}
-                      className="mt-0.5 size-5 shrink-0 text-red-400"
-                    />
-                    <div>
-                      The document file could not be retrieved from storage. It
-                      may have been deleted or is temporarily unavailable.
-                      Contact the issuer for a re-issued document.
+                {verificationMethod === "token" &&
+                  result.result === "STORAGE_ERROR" && (
+                    <div className="flex items-start gap-2 rounded-lg border border-slate-800 bg-slate-950 p-4 text-sm leading-normal text-slate-400">
+                      <HugeiconsIcon
+                        icon={InformationCircleIcon}
+                        className="mt-0.5 size-5 shrink-0 text-red-400"
+                      />
+                      <div>
+                        The document file could not be retrieved from storage.
+                        It may have been deleted or is temporarily unavailable.
+                        Contact the issuer for a re-issued document.
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </CardContent>
 
               <CardFooter className="flex justify-between gap-3 border-t p-4">
