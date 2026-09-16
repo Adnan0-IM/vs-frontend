@@ -380,6 +380,26 @@ const Verification = () => {
                 </div>
               )}
 
+              {verificationMethod === "token" && result.result === "NOT_FOUND" && (
+                <div className="flex items-center gap-3 border-b border-amber-500/20 bg-amber-500/10 px-6 py-5">
+                  <HugeiconsIcon
+                    icon={Alert02Icon}
+                    className="size-10 shrink-0 text-amber-400"
+                    strokeWidth={2}
+                  />
+                  <div>
+                    <h2 className="text-lg font-bold text-amber-400">
+                      INVALID QR CODE
+                    </h2>
+                    <p className="text-xs text-amber-400/80">
+                      No document found for this verification token. The QR code
+                      may be invalid, expired, or the document was never issued
+                      through our platform.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <CardContent className="space-y-6 p-6">
                 {/* Document Metadata if available */}
                 {result.document && (
