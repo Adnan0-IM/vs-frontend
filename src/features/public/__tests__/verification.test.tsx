@@ -138,7 +138,7 @@ describe('Verification Page', () => {
       await flushPromises();
 
       expect(await screen.findByText('TAMPERED / INVALID')).toBeInTheDocument();
-      expect(await screen.findByText('Hash mismatch. The document content was modified after signing.')).toBeInTheDocument();
+      expect(await screen.findByText('Document content was modified after signing. Hash mismatch detected.')).toBeInTheDocument();
     });
 
     it('displays invalid QR code message for unknown token', async () => {
@@ -328,7 +328,7 @@ describe('Verification Page', () => {
       });
       await flushPromises();
 
-      expect(await screen.findByText('FILE NOT IN SYSTEM')).toBeInTheDocument();
+      expect(await screen.findByText('NOT REGISTERED')).toBeInTheDocument();
     });
 
     it('shows an error toast when file verification fails', async () => {
