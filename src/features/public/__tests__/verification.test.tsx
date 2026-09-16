@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@/test/test-utils';
+import { render, screen, waitFor, act } from '@/test/test-utils';
 import { fireEvent } from '@testing-library/react';
 import Verification from '../verification';
 import { verifyDocumentByToken, verifyDocumentByFile } from '../../app/api/documents';
@@ -34,6 +34,13 @@ function getFileInput(): HTMLInputElement {
   const input = document.querySelector('input[type="file"]') as HTMLInputElement;
   if (!input) throw new Error('file input not found');
   return input;
+}
+
+// Helper to wait for all state updates to flush
+async function flushPromises() {
+  await act(async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+  });
 }
 
 describe('Verification Page', () => {
@@ -75,6 +82,7 @@ describe('Verification Page', () => {
       await waitFor(() => {
         expect(verifyDocumentByToken).toHaveBeenCalledWith('test-token');
       });
+      await flushPromises();
 
       expect(await screen.findByText('AUTHENTIC CREDENTIAL')).toBeInTheDocument();
       expect(screen.getByText('Test Document')).toBeInTheDocument();
@@ -101,28 +109,39 @@ describe('Verification Page', () => {
 
       render(<Verification />, { route: '/verification?token=revoked-token' });
 
+      await waitFor(() => {
+        expect(verifyDocumentByToken).toHaveBeenCalledWith('revoked-token');
+      });
+      await flushPromises();
+
       expect(await screen.findByText('REVOKED CREDENTIAL')).toBeInTheDocument();
       expect(
         screen.getByText('This credential was valid but has since been revoked by the issuer.')
       ).toBeInTheDocument();
     });
 
-    it('displays error when document is tampered', async () => {
+    it('displays error when document is tampered (hash mismatch)', async () => {
       const mockResponse = {
         success: true,
         verified: false,
-        result: 'TAMPERED',
-        message: 'Signature mismatch',
+        result: 'TAMPERED_HASH',
+        message: 'Hash mismatch',
       };
 
       (verifyDocumentByToken as any).mockResolvedValueOnce(mockResponse);
 
       render(<Verification />, { route: '/verification?token=tampered-token' });
 
+      await waitFor(() => {
+        expect(verifyDocumentByToken).toHaveBeenCalledWith('tampered-token');
+      });
+      await flushPromises();
+
       expect(await screen.findByText('TAMPERED / INVALID')).toBeInTheDocument();
+      expect(await screen.findByText('Hash mismatch. The document content was modified after signing.')).toBeInTheDocument();
     });
 
-    it('displays not found message', async () => {
+    it('displays invalid QR code message for unknown token', async () => {
       const mockResponse = {
         success: true,
         verified: false,
@@ -133,12 +152,18 @@ describe('Verification Page', () => {
 
       render(<Verification />, { route: '/verification?token=unknown-token' });
 
-      expect(await screen.findByText('UNREGISTERED FILE')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(verifyDocumentByToken).toHaveBeenCalledWith('unknown-token');
+      });
+      // Wait for multiple event loop ticks to allow useEffect setTimeout to fire
+      await flushPromises();
+      await flushPromises();
+      await flushPromises();
+
+      expect(await screen.findByText('INVALID QR CODE')).toBeInTheDocument();
     });
 
     it('shows a loading state while token verification is running', async () => {
-      // Deferred so we can assert loading, then settle (handled rejection) so no
-      // async work is left suspended at teardown.
       let rejectVerify!: (e: Error) => void;
       const pending = new Promise<unknown>((_, rej) => { rejectVerify = rej; });
       (verifyDocumentByToken as any).mockReturnValueOnce(pending);
@@ -164,6 +189,11 @@ describe('Verification Page', () => {
       render(<Verification />, { route: '/verification?token=error-token' });
 
       await waitFor(() => {
+        expect(verifyDocumentByToken).toHaveBeenCalledWith('error-token');
+      });
+      await flushPromises();
+
+      await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
           'Verification service unavailable',
           { id: 'toast-id' }
@@ -175,6 +205,11 @@ describe('Verification Page', () => {
       (verifyDocumentByToken as any).mockRejectedValueOnce(new Error('boom'));
 
       render(<Verification />, { route: '/verification?token=error-token' });
+
+      await waitFor(() => {
+        expect(verifyDocumentByToken).toHaveBeenCalledWith('error-token');
+      });
+      await flushPromises();
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith('Verification check failed.', {
@@ -212,6 +247,7 @@ describe('Verification Page', () => {
       await waitFor(() => {
         expect(verifyDocumentByFile).toHaveBeenCalledWith('https://example.com/temp-pdf.pdf');
       });
+      await flushPromises();
 
       expect(await screen.findByText('Uploaded Document')).toBeInTheDocument();
     });
@@ -267,14 +303,19 @@ describe('Verification Page', () => {
       const file = new File(['dummy content'], 'revoked.pdf', { type: 'application/pdf' });
       fireEvent.change(getFileInput(), { target: { files: [file] } });
 
+      await waitFor(() => {
+        expect(verifyDocumentByFile).toHaveBeenCalled();
+      });
+      await flushPromises();
+
       expect(await screen.findByText('REVOKED CREDENTIAL')).toBeInTheDocument();
     });
 
-    it('displays a NOT_FOUND result for an unknown file', async () => {
+    it('displays a NO_MATCHING_RECORD result for an unknown file', async () => {
       (verifyDocumentByFile as any).mockResolvedValueOnce({
-        success: true,
+        success: false,
         verified: false,
-        result: 'NOT_FOUND',
+        result: 'NO_MATCHING_RECORD',
       });
 
       render(<Verification />);
@@ -282,7 +323,12 @@ describe('Verification Page', () => {
       const file = new File(['dummy content'], 'unknown.pdf', { type: 'application/pdf' });
       fireEvent.change(getFileInput(), { target: { files: [file] } });
 
-      expect(await screen.findByText('UNREGISTERED FILE')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(verifyDocumentByFile).toHaveBeenCalled();
+      });
+      await flushPromises();
+
+      expect(await screen.findByText('FILE NOT IN SYSTEM')).toBeInTheDocument();
     });
 
     it('shows an error toast when file verification fails', async () => {
@@ -294,6 +340,11 @@ describe('Verification Page', () => {
 
       const file = new File(['dummy content'], 'test.pdf', { type: 'application/pdf' });
       fireEvent.change(getFileInput(), { target: { files: [file] } });
+
+      await waitFor(() => {
+        expect(verifyDocumentByFile).toHaveBeenCalled();
+      });
+      await flushPromises();
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith('File verification failed.', {
