@@ -557,7 +557,7 @@ const Verification = () => {
                         <strong>Modified Version Detected</strong>
                         <br />
                         This file is similar to a registered document but has been altered.
-                        The system found a close match using fuzzy hashing (TLSH similarity {' > '} 80%).
+                        The system found a close match using fuzzy hashing.
                         The document content differs from the original signed version.
                         <br />
                         Please contact the issuer for the authentic version.
