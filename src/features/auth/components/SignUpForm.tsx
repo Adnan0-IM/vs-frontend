@@ -89,7 +89,7 @@ export function SignUpForm({
                     <Input
                       id="name"
                       type="text"
-                      placeholder="John Doe"
+                      placeholder="Adnan Iliyasu"
                       required
                       {...field}
                     />
@@ -111,7 +111,7 @@ export function SignUpForm({
                     <Input
                       id="email"
                       type="email"
-                      placeholder="m@example.com"
+                      placeholder="adnan@gmail.com"
                       required
                       {...field}
                     />

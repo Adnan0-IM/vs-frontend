@@ -83,7 +83,7 @@ export function SignInForm({
                     <Input
                       id="email"
                       type="email"
-                      placeholder="m@example.com"
+                      placeholder="adnan@gmail.com"
                       required
                       {...field}
                     />
