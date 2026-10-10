@@ -15,8 +15,7 @@ const createQueryClient = () =>
     },
   });
 
-// Custom render function with providers. A fresh QueryClient is created per
-// render so query state does not leak between tests.
+
 interface RenderOptions {
   route?: string;
 }

@@ -30,8 +30,6 @@ export function SignUpForm({
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  // Where to send the user once the whole auth flow completes (e.g. back to
-  // an invitation page). Carried through to sign-in after account creation.
   const redirectTo = searchParams.get("redirectTo")
   const [errorMessage, setErrorMessage] = useState("")
   const form = useForm<z.infer<typeof signupFormSchema>>({
@@ -54,8 +52,6 @@ export function SignUpForm({
         password: data.password,
       })
 
-      // Carry the redirect destination (e.g. an invitation link) through to
-      // sign-in so the flow can resume after the user signs in.
       navigate(
         redirectTo
           ? `/auth/sign-in?redirectTo=${encodeURIComponent(redirectTo)}`

@@ -30,8 +30,6 @@ export function SignInForm({
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  // Where to send the user after a successful sign-in (e.g. back to an
-  // invitation page). Preserved across the sign-in <-> sign-up round trip.
   const redirectTo = searchParams.get("redirectTo")
   const [errorMessage, setErrorMessage] = useState("")
   const form = useForm<z.infer<typeof signinFormSchema>>({
@@ -51,8 +49,6 @@ export function SignInForm({
         password: data.password,
       })
 
-      // Return the user to where they came from (e.g. an invitation link)
-      // instead of the dashboard. Only allow internal paths.
       navigate(
         redirectTo && redirectTo.startsWith("/") ? redirectTo : "/dashboard"
       )

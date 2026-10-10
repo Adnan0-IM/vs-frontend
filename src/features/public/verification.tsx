@@ -42,7 +42,6 @@ const Verification = () => {
     "token" | "file" | null
   >(null)
 
-  // File verification upload state
   const [dragActive, setDragActive] = useState(false)
   const [uploadingFile, setUploadingFile] = useState(false)
 
@@ -93,7 +92,6 @@ const Verification = () => {
     }
   }
 
-  // Auto-verify if token is in URL
   useEffect(() => {
     if (token) {
       const timer = setTimeout(() => {
